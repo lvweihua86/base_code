@@ -1,57 +1,71 @@
 package com.hivescm.code.controller;
 
-import com.hivescm.code.service.CodeIdService;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import com.hivescm.code.controller.doc.ICodeDoc;
+import com.hivescm.code.dto.CodeResult;
+import com.hivescm.code.dto.GenerateCode;
+import com.hivescm.code.dto.RecycleCode;
+import com.hivescm.code.exception.CodeErrorCode;
+import com.hivescm.code.exception.CodeException;
+import com.hivescm.code.service.CodeService;
+import com.hivescm.common.domain.DataResult;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import com.hivescm.common.domain.DataResult;
 
 /**
- * Created by Administrator on 2017/7/9.
+ * <b>Description:</b><br>
+ * 编码控制器 <br><br>
+ * <p>
+ * <b>Note</b><br>
+ * <b>ProjectName:</b> base-code
+ * <br><b>PackageName:</b> com.hivescm.code.bean
+ * <br><b>Date:</b> 2017/10/19 17:17
+ *
+ * @author DongChunfu
+ * @version 1.0
+ * @since JDK 1.8
  */
 @RestController
-@Api(value = "生成编码id")
-public class CodeIdController {
+public class CodeController implements ICodeDoc {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CodeController.class);
 
-   @Autowired
-   @Qualifier("codeIdService")
-   private CodeIdService codeIdService;
+	@Autowired
+	private CodeService codeService;
 
-   @RequestMapping(value = "/getID", method = RequestMethod.GET)
-   @ApiOperation(value="生成id",httpMethod = "GET")
-   @ApiImplicitParams({
-       @ApiImplicitParam(name = "businessCode", value = "业务id", required = true, paramType = "query", dataType = "String"),
-       @ApiImplicitParam(name = "orgId", value = "组织id", required = true, paramType = "query", dataType = "String"),
-       @ApiImplicitParam(name = "json", value = "前台数据,通过该数据组织生成id", required = true, paramType = "query", dataType = "String"),
-   })
-   public DataResult <String> generatorId(@RequestParam("businessCode") String
-                                                    businessCode,
-                                         @RequestParam("orgId")String orgId,
-                                         @RequestParam("json")String json) throws Exception{
+	@Override
+	@RequestMapping(value = "/generateCode", method = RequestMethod.POST)
+	public DataResult<CodeResult> generateCode(@RequestBody GenerateCode reqParam) {
+		LOGGER.info("generate code request,param:{}.", reqParam);
+		try {
+			CodeResult codeResult = codeService.generateCode(reqParam);
+			LOGGER.info("generate code response,result:{},param:{}.", codeResult, reqParam);
+			return DataResult.success(codeResult, CodeResult.class);
+		} catch (CodeException ce) {
+			LOGGER.error("generate code error,param:" + reqParam, ce);
+			return DataResult.faild(ce.getErrorCode(), ce.getMessage());
+		} catch (Exception ex) {
+			LOGGER.error("generate code error,param:" + reqParam, ex);
+			return DataResult.faild(CodeErrorCode.CODE_SERVICE_CODE, "编码系统错误");
+		}
+	}
 
-       String id = codeIdService.generateID(businessCode,orgId,json);
-       if(null==id || "".equals(id)){
-          return DataResult.faild(3456,"创建编码id失败");
-       }else{
-           return DataResult.success(id,String.class);
-       }
-   }
-   
-   @RequestMapping(value = "/init", method = RequestMethod.GET)
-   @ApiOperation(value="初始化数据",httpMethod = "GET")
-   public DataResult<String> initCodeIDTemplate() {
-       try{
-           codeIdService.initCodeIDTemplate();
-       }catch (Exception e){
-           return DataResult.faild(5354,"初始化编码id模版失败");
-       }
-       return DataResult.success("success",String.class);
-   }
+	@RequestMapping(value = "/recycleCode", method = RequestMethod.POST)
+	public DataResult<Boolean> recycleCode(@RequestBody RecycleCode reqParam) {
+		return DataResult.success(Boolean.TRUE, Boolean.class);
+	}
+
+	@Override
+	@RequestMapping(value = "/initCodeTemplate", method = RequestMethod.GET)
+	public DataResult<Boolean> initCodeTemplate() {
+		try {
+			codeService.initCodeIDTemplate();
+		} catch (Exception e) {
+			return DataResult.faild(5354, "初始化编码id模版失败");
+		}
+		return DataResult.success(Boolean.TRUE, Boolean.class);
+	}
 }

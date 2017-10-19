@@ -2,7 +2,7 @@ package com.hivescm.code.exception;
 
 /**
  * <b>Description:</b><br>
- * ${TODO}(请描述本类的作用) <br><br>
+ * 编码异常 <br><br>
  * <p>
  * <b>Note</b><br>
  * <b>ProjectName:</b> base-code
@@ -13,5 +13,24 @@ package com.hivescm.code.exception;
  * @version 1.0
  * @since JDK 1.8
  */
-public class CodeException {
+public class CodeException extends RuntimeException {
+	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 错误码
+	 */
+	private Integer errorCode;
+
+	public CodeException(Integer errorCode, String message) {
+		super(message);
+		this.errorCode = errorCode;
+	}
+
+	public Integer getErrorCode() {
+		return errorCode;
+	}
+
+	public void setErrorCode(Integer errorCode) {
+		this.errorCode = errorCode;
+	}
 }

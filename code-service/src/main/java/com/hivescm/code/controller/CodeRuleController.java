@@ -1,232 +1,68 @@
-package com.hivescm.codeid.controller;
+package com.hivescm.code.controller;
 
 import com.hivescm.cache.client.JedisClient;
-import com.hivescm.codeid.common.Constants;
-import com.hivescm.codeid.error.ErrorCode;
-import com.hivescm.codeid.pojo.CodeIDItem;
-import com.hivescm.codeid.pojo.CodeId;
-import com.hivescm.codeid.pojo.VO;
-import com.hivescm.codeid.service.CodeIDItemService;
-import com.hivescm.codeid.service.CodeIDService;
-import com.hivescm.codeid.service.GenerateIDService;
+import com.hivescm.code.controller.doc.ICodeRuleDoc;
+import com.hivescm.code.dto.CodeRule;
+import com.hivescm.code.exception.CodeErrorCode;
+import com.hivescm.code.exception.CodeException;
+import com.hivescm.code.service.CodeRuleService;
+import com.hivescm.code.validator.AddCodeRuleValidator;
 import com.hivescm.common.domain.DataResult;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiImplicitParam;
-import io.swagger.annotations.ApiImplicitParams;
-import io.swagger.annotations.ApiOperation;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
-import java.util.List;
-
-@Api(value = "编码id CRUD")
+import javax.annotation.Resource;
+/**
+ * <b>Description:</b><br>
+ * 编码规则控制器 <br><br>
+ * <p>
+ * <b>Note</b><br>
+ * <b>ProjectName:</b> base-code
+ * <br><b>PackageName:</b> com.hivescm.code.bean
+ * <br><b>Date:</b> 2017/10/19 17:17
+ *
+ * @author DongChunfu
+ * @version 1.0
+ * @since JDK 1.8
+ */
 @RestController
-public class CodeIDController {
+public class CodeRuleController implements ICodeRuleDoc {
+	private static final Logger LOGGER = LoggerFactory.getLogger(CodeController.class);
 
-    @Autowired
-    @Qualifier("codeIDService")
-    private CodeIDService codeIDService;
+	@Resource
+	private AddCodeRuleValidator addCodeRuleValidator;
 
-    @Autowired
-    @Qualifier("codeIDItemService")
-    private CodeIDItemService codeIDItemService;
+	@Resource
+	private CodeRuleService codeRuleService;
 
-    @Autowired
-    @Qualifier("generateIDService")
-    private GenerateIDService generateIDService;
+	@Resource
+	private CodeItemService codeItemService;
 
+	@Autowired
+	private JedisClient jedisClient;
 
-    @Autowired
-    private JedisClient jc;
+	@Override
+	@RequestMapping(value = "/addCodeRule", method = RequestMethod.POST)
+	public DataResult<Boolean> addCodeRule(@RequestBody CodeRule reqParam) {
+		LOGGER.info("add code rule request,param:{}.", reqParam);
+		try {
+			addCodeRuleValidator.validate(reqParam);
 
+			codeRuleService.addCodeRule(reqParam);
 
-    @ApiOperation(value="新增编码id",httpMethod = "POST")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "codeID", value = "编码id实体类", required = true, paramType = "query", dataType = "pojo"),
-    })
-    @RequestMapping(value="/addCodeID",method = RequestMethod.POST)
-    @CrossOrigin
-    public DataResult addCodeId(@RequestBody CodeId codeId){
-        long id = codeIDService.addCodeId(codeId);
-        if(id==-1L){
-            return DataResult.success(ErrorCode.NO_ID);
-        }else{
+			return DataResult.success(Boolean.TRUE, Boolean.class);
+		} catch (CodeException ce) {
+			LOGGER.error("add code rule error,param:" + reqParam, ce);
+			return DataResult.faild(ce.getErrorCode(), ce.getMessage());
+		} catch (Exception ex) {
+			LOGGER.error("add code rule error,param:" + reqParam, ex);
+			return DataResult.faild(CodeErrorCode.CODE_SERVICE_CODE, "编码系统错误");
+		}
+	}
 
-            /* 具体的编码规则 对应的 业务实体+组织id
-		     *  key -- DYBM_orgId_businessCode
-		     *  value -- codeid:time_format:code_type:zero_reason:is_default:is_break_code
-		     */
-
-            String key = Constants.CODEID_BUSINESSCODE_ORGID+"_"+codeId.getOrgId()
-                    +"_"+codeId.getBusinessCode();
-
-            String value = codeId.getId()+":"+codeId.getTimeFormat()+":"+codeId.getCodeType()
-                    +":"+codeId.getZeroReason()+":"+codeId.getIsDefault()+":"+codeId.getIsBreakCode();
-
-            jc.set(key,value);
-
-            return DataResult.success(id);
-        }
-    }
-
-    @ApiOperation(value="修改编码id",httpMethod = "POST")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "codeID", value = "编码id实体类", required = true, paramType = "query", dataType = "pojo"),
-    })
-    @RequestMapping(value = "/updateCodeID",method = RequestMethod.POST)
-    @CrossOrigin
-    public DataResult updateCodeID(@RequestBody CodeId codeId){
-        int i = codeIDService.updateByPrimaryKey(codeId);
-        if(i>0){
-
-             /* 具体的编码规则 对应的 业务实体+组织id
-		     *  key -- DYBM_orgId_businessCode
-		     *  value -- codeid:time_format:code_type:zero_reason:is_default:is_break_code
-		     */
-
-            String key = Constants.CODEID_BUSINESSCODE_ORGID+"_"+codeId.getOrgId()
-                    +"_"+codeId.getBusinessCode();
-
-            String value = codeId.getId()+":"+codeId.getTimeFormat()+":"+codeId.getCodeType()
-                    +":"+codeId.getZeroReason()+":"+codeId.getIsDefault()+":"+codeId.getIsBreakCode();
-
-            jc.set(key,value);
-
-            return DataResult.success("success");
-        }else{
-            return DataResult.success("failure");
-        }
-    }
-
-    @ApiOperation(value="通过编码id，获取所有的编码详情",httpMethod = "GET")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "编码id的主键", required = true, paramType = "query", dataType = "long"),
-    })
-    @RequestMapping(value = "/showCodeID/{id}",method = RequestMethod.GET)
-    @CrossOrigin
-    public DataResult getCodeIDItemsByCodeId(@PathVariable Long id){
-        CodeId codeID = codeIDService.selectByPrimaryKey(id);
-        if(null == codeID){
-            return DataResult.success(ErrorCode.NO_CODEID);
-        }else{
-            return DataResult.success(codeID);
-        }
-    }
-
-    @ApiOperation(value="获取编码类型",httpMethod = "GET")
-    @RequestMapping(value = "/getCodeTypes",method = RequestMethod.GET)
-    @CrossOrigin
-    public DataResult geDataResultCodeTypes(){
-        List<VO> list =  codeIDService.getCodeTypes();
-        return DataResult.success(list);
-    }
-
-    @ApiOperation(value="获取无流水类型",httpMethod = "GET")
-    @RequestMapping(value = "/getNoSerialTypes",method = RequestMethod.GET)
-    @CrossOrigin
-    public DataResult getNoSerialTypes(){
-        List<VO> list =  codeIDService.getNoSerialTypes();
-        return DataResult.success(list);
-    }
-
-    @ApiOperation(value="获取字符串流水类型",httpMethod = "GET")
-    @RequestMapping(value = "/getStringSerialTypes",method = RequestMethod.GET)
-    @CrossOrigin
-    public DataResult getStringSerialTypes(){
-        List<VO> list =  codeIDService.getStringSerialTypes();
-        return DataResult.success(list);
-    }
-
-    @ApiOperation(value="获取时间流水类型",httpMethod = "GET")
-    @RequestMapping(value = "/getDateSerialTypes",method = RequestMethod.GET)
-    @CrossOrigin
-    public DataResult getDateSerialTypes(){
-        List<VO> list =  codeIDService.getDateSerialTypes();
-        return DataResult.success(list);
-    }
-
-    @ApiOperation(value="停用编码id",httpMethod = "GET")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "codeId", value = "编码id主键", required = true, paramType = "query", dataType = "long"),
-    })
-    @RequestMapping(value = "/stopCodeID/{codeId}",method = RequestMethod.GET)
-    @CrossOrigin
-    public DataResult stopCodeID(@PathVariable long codeId){
-        String s = codeIDService.stopCodeID(codeId);
-        if("success".equals(s)){
-            CodeId codeID = codeIDService.selectByPrimaryKey(codeId);
-            generateIDService.deleteKey(codeID.getOrgId(),codeID.getBusinessCode());
-            return DataResult.success(s);
-        }else{
-            return DataResult.success(s);
-        }
-    }
-
-    @ApiOperation(value="启用编码id",httpMethod = "GET")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "codeId", value = "编码id主键", required = true, paramType = "query", dataType = "long"),
-    })
-    @RequestMapping(value = "/reusedCodeID/{codeId}",method = RequestMethod.GET)
-    @CrossOrigin
-    public DataResult reusedCodeID(@PathVariable long codeId){
-        String s = codeIDService.reusedCodeID(codeId);
-        if("success".equals(s)){
-            generateIDService.updateCodeIDTemplate(codeId);
-            return DataResult.success(s);
-        }else{
-            return DataResult.success(s);
-        }
-    }
-
-    @ApiOperation(value="删除编码id",httpMethod = "GET")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "id", value = "编码id主键", required = true, paramType = "query", dataType = "long"),
-    })
-    @RequestMapping(value = "/deleteCodeID/{id}",method = RequestMethod.GET)
-    @CrossOrigin
-    public DataResult deleteCodeID(@PathVariable long id){
-        try{
-            CodeId codeId = codeIDService.selectByPrimaryKey(id);
-            List<CodeIDItem> codeIDItems = codeIDItemService.getCodeIDItemsByCodeId(id);
-            long[] ids = new long[codeIDItems.size()];
-            for(int i=0;i<codeIDItems.size();i++){
-                ids[i] = codeIDItems.get(i).getId();
-            }
-            codeIDItemService.batchDeleteBycodeId(ids);
-            jc.delete(codeId.getOrgId()+"_"+codeId.getBusinessCode());
-            codeIDService.deleteCodeID(id);
-            String key = Constants.CODEID_BUSINESSCODE_ORGID+"_"+codeId.getOrgId()
-                    +"_"+codeId.getBusinessCode();
-            jc.delete(key);
-            return DataResult.success("success");
-        }catch (Exception e){
-            e.printStackTrace();
-            return DataResult.success("failure");
-        }
-    }
-
-    @ApiOperation(value="获取归零依据",httpMethod = "GET")
-    @ApiImplicitParams({
-            @ApiImplicitParam(name = "orgId", value = "组织id", required = true, paramType = "query", dataType = "String"),
-            @ApiImplicitParam(name = "businessId", value = "业务id", required = true, paramType = "query", dataType = "String"),
-    })
-    @RequestMapping(value = "/getZeroReason/{orgId}/{businessId}",method = RequestMethod.GET)
-    @CrossOrigin
-    public DataResult  getZeroReason(@PathVariable String orgId,@PathVariable String businessId){
-        List<String> s = codeIDService.getZeroReason(orgId,businessId);
-        if(null==s || "".equals(s)){
-            VO vo = new VO("failure","-1");
-            return DataResult.success(vo);
-        }else{
-            List<VO> VOS = new ArrayList<>();
-            for(String sx : s){
-                String[] sxx = sx.split(":");
-                VO vo = new VO(sxx[1],sxx[0]);
-                VOS.add(vo);
-            }
-            return DataResult.success(VOS);
-        }
-    }
 }

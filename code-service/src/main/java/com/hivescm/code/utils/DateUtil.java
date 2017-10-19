@@ -2,7 +2,7 @@ package com.hivescm.code.utils;
 
 /**
  * <b>Description:</b><br>
- * ${TODO}(请描述本类的作用) <br><br>
+ * 日期类工具 <br><br>
  * <p>
  * <b>Note</b><br>
  * <b>ProjectName:</b> base-code

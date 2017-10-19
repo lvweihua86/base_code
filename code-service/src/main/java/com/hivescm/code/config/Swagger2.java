@@ -1,4 +1,4 @@
-package com.hivescm.codeid.config;
+package com.hivescm.code.config;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

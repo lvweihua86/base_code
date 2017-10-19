@@ -1,25 +1,30 @@
 package com.hivescm.code.service;
 
-import com.hivescm.code.pojo.CodeIDItem;
-
-import java.util.List;
+import com.hivescm.code.dto.CodeResult;
+import com.hivescm.code.dto.GenerateCode;
 
 /**
- * 编码id API
+ * <b>Description:</b><br>
+ * 编码服务 <br><br>
+ * <p>
+ * <b>Note</b><br>
+ * <b>ProjectName:</b> base-code
+ * <br><b>PackageName:</b> com.hivescm.code.controller.doc
+ * <br><b>Date:</b> 2017/10/12 17:39
+ *
+ * @author DongChunfu
+ * @version 1.0
+ * @since JDK 1.8
  */
-public interface CodeIdService {
+public interface CodeService {
 
-	List<CodeIDItem> getCodeIDItemsByCodeId(long codeId) throws Exception;
-
-	String getCodeIDTemplateFields(String businessCode, String orgId,
-			List<CodeIDItem> list);
-
-	String generateID(String businessCode, String orgId, String json) throws
-			Exception;
-
-	String digitFillZero(String value, int length) throws Exception;
-
-	String letterDigitIncr(String k1, String k2, int length) throws Exception;
+	/**
+	 * 生成编码服务
+	 *
+	 * @param reqParam 生成编码请求参数
+	 * @return 编码
+	 */
+	CodeResult generateCode(final GenerateCode reqParam);
 
 	void initCodeIDTemplate();
 }

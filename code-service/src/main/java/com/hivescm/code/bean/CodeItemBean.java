@@ -1,124 +1,162 @@
-package com.hivescm.code.dto;
+package com.hivescm.code.bean;
 
 import java.io.Serializable;
 
-public class CodeItem implements Serializable{
+/**
+ * <b>Description:</b><br>
+ * 编码项实体数据 <br><br>
+ * <p>
+ * <b>Note</b><br>
+ * <b>ProjectName:</b> base-code
+ * <br><b>PackageName:</b> com.hivescm.code.bean
+ * <br><b>Date:</b> 2017/10/19 17:17
+ *
+ * @author DongChunfu
+ * @version 1.0
+ * @since JDK 1.8
+ */
+public class CodeItemBean implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = 4301203973242845410L;
+	/**
+	 * 编码规则ID
+	 */
+	private Long codeId;
+	/**
+	 * 顺序（5段）
+	 */
+	private Integer sequence;
+	/**
+	 * 段类型
+	 * 1常量;
+	 * 2字符串;
+	 * 3时间类型;
+	 * 4流水号
+	 */
+	private Integer sectionType;
+	/**
+	 * 段值
+	 */
+	private String sectionValue;
+	/**
+	 * 段长度
+	 */
+	private Integer sectionLength;
+	/**
+	 * 流水依据
+	 * 0 否
+	 * 1 是
+	 */
+	private Integer serial;
+	/**
+	 * 流水依据
+	 * 0:不流水;
+	 * 1:按日流水;
+	 * 2:按月流水;
+	 * 3:按年流水;
+	 * 4:按字符串流水;
+	 */
+	private Integer serialType;
+	/**
+	 * 补位方式
+	 * 1左补位；
+	 * 2右补位;
+	 * 3不补位。
+	 */
+	private Integer coverWay;
+	/**
+	 * 补位字符
+	 */
+	private String coverChar;
 
-	private Long id;
+	public CodeItemBean() {
+	}
 
-    private Integer codeType;
+	public Long getCodeId() {
+		return codeId;
+	}
 
-    private String codeColumn;
+	public void setCodeId(Long codeId) {
+		this.codeId = codeId;
+	}
 
-    private Integer codeLongth;
+	public Integer getSequence() {
+		return sequence;
+	}
 
-    private Integer sequence;
+	public void setSequence(Integer sequence) {
+		this.sequence = sequence;
+	}
 
-    private Integer isSerial;
+	public Integer getSectionType() {
+		return sectionType;
+	}
 
-    private Integer serialType;
+	public void setSectionType(Integer sectionType) {
+		this.sectionType = sectionType;
+	}
 
-    private Integer fillPattern;
+	public String getSectionValue() {
+		return sectionValue;
+	}
 
-    private String fillStr;
+	public void setSectionValue(String sectionValue) {
+		this.sectionValue = sectionValue;
+	}
 
-    private Long codeId;
+	public Integer getSectionLength() {
+		return sectionLength;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void setSectionLength(Integer sectionLength) {
+		this.sectionLength = sectionLength;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Integer getSerial() {
+		return serial;
+	}
 
-    public Integer getCodeType() {
-        return codeType;
-    }
+	public void setSerial(Integer serial) {
+		this.serial = serial;
+	}
 
-    public void setCodeType(Integer codeType) {
-        this.codeType = codeType;
-    }
+	public Integer getSerialType() {
+		return serialType;
+	}
 
-    public String getCodeColumn() {
-        return codeColumn;
-    }
+	public void setSerialType(Integer serialType) {
+		this.serialType = serialType;
+	}
 
-    public void setCodeColumn(String codeColumn) {
-        this.codeColumn = codeColumn == null ? null : codeColumn.trim();
-    }
+	public Integer getCoverWay() {
+		return coverWay;
+	}
 
-    public Integer getCodeLongth() {
-        return codeLongth;
-    }
+	public void setCoverWay(Integer coverWay) {
+		this.coverWay = coverWay;
+	}
 
-    public void setCodeLongth(Integer codeLongth) {
-        this.codeLongth = codeLongth;
-    }
+	public String getCoverChar() {
+		return coverChar;
+	}
 
-    public Integer getSequence() {
-        return sequence;
-    }
+	public void setCoverChar(String coverChar) {
+		this.coverChar = coverChar;
+	}
 
-    public void setSequence(Integer sequence) {
-        this.sequence = sequence;
-    }
-
-    public Integer getIsSerial() {
-        return isSerial;
-    }
-
-    public void setIsSerial(Integer isSerial) {
-        this.isSerial = isSerial;
-    }
-
-    public Integer getSerialType() {
-        return serialType;
-    }
-
-    public void setSerialType(Integer serialType) {
-        this.serialType = serialType;
-    }
-
-    public Integer getFillPattern() {
-        return fillPattern;
-    }
-
-    public void setFillPattern(Integer fillPattern) {
-        this.fillPattern = fillPattern;
-    }
-
-    public String getFillStr() {
-        return fillStr;
-    }
-
-    public void setFillStr(String fillStr) {
-        this.fillStr = fillStr == null ? null : fillStr.trim();
-    }
-
-    public Long getCodeId() {
-        return codeId;
-    }
-
-    public void setCodeId(Long codeId) {
-        this.codeId = codeId;
-    }
-
-    @Override
-    public String toString() {
-        return "CodeIDItem{" +
-                "id=" + id +
-                ", codeType=" + codeType +
-                ", codeColumn='" + codeColumn + '\'' +
-                ", codeLongth=" + codeLongth +
-                ", sequence=" + sequence +
-                ", isSerial=" + isSerial +
-                ", serialType=" + serialType +
-                ", fillPattern=" + fillPattern +
-                ", fillStr='" + fillStr + '\'' +
-                ", codeId=" + codeId +
-                '}';
-    }
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("CodeItemBean{");
+		sb.append("codeId=").append(codeId);
+		sb.append(", sequence=").append(sequence);
+		sb.append(", sectionType=").append(sectionType);
+		sb.append(", sectionValue='").append(sectionValue).append('\'');
+		sb.append(", sectionLength=").append(sectionLength);
+		sb.append(", serial=").append(serial);
+		sb.append(", serialType=").append(serialType);
+		sb.append(", coverWay=").append(coverWay);
+		sb.append(", coverChar='").append(coverChar).append('\'');
+		sb.append('}');
+		return sb.toString();
+	}
 }

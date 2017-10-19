@@ -14,7 +14,7 @@ import java.util.Map;
  *
  * @author DongChunfu
  */
-public class GenerateCodeReq implements Serializable {
+public class GenerateCode implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * 集团ID（选填）（若组织无对应的编码规则，集团ID为空，默认取平台级别的编码规则）
@@ -41,7 +41,7 @@ public class GenerateCodeReq implements Serializable {
 	 */
 	private Map<String, Date> bizTime = new HashMap<>(5, 1);
 
-	public GenerateCodeReq() {
+	public GenerateCode() {
 	}
 
 	public Integer getGroupId() {
@@ -86,7 +86,7 @@ public class GenerateCodeReq implements Serializable {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("GenerateCodeReq{");
+		final StringBuilder sb = new StringBuilder("GenerateCode{");
 		sb.append("groupId=").append(groupId);
 		sb.append(", orgId=").append(orgId);
 		sb.append(", bizCode='").append(bizCode).append('\'');

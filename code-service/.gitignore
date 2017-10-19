@@ -1,2 +1,6 @@
-*.iml
-target
+code-service.iml
+/target/
+*.prefs
+/.settings/
+*.log
+/.idea/

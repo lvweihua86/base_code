@@ -1,168 +1,227 @@
-package com.hivescm.code.dto;
+package com.hivescm.code.bean;
 
 import java.io.Serializable;
 
-public class CodeRule implements Serializable{
+/**
+ * <b>Description:</b><br>
+ * 编码规则实体数据 <br><br>
+ * <p>
+ * <b>Note</b><br>
+ * <b>ProjectName:</b> base-code
+ * <br><b>PackageName:</b> com.hivescm.code.bean
+ * <br><b>Date:</b> 2017/10/19 17:17
+ *
+ * @author DongChunfu
+ * @version 1.0
+ * @since JDK 1.8
+ */
+public class CodeRuleBean implements Serializable {
+	private static final long serialVersionUID = 1L;
 
-	private static final long serialVersionUID = -2109831853530494617L;
+	/**
+	 * 规则级别
+	 */
+	private Integer ruleLevel;
+	/**
+	 * 集团ID（全局为0）
+	 */
+	private Integer groupId;
+	/**
+	 * 业务实体
+	 */
+	private String bizEntity;
+	/**
+	 * 规则编码
+	 */
+	private String ruleCode;
+	/**
+	 * 规则名称
+	 */
+	private String ruleName;
+	/**
+	 * 状态
+	 * 1 未用；
+	 * 2 启用；
+	 * 3 停用；
+	 * 4 删除。
+	 */
+	private Integer state;
+	/**
+	 * 编码方式
+	 */
+	private Integer codeWay;
+	/**
+	 * 断码补码
+	 * 0 否；
+	 * 1 是
+	 */
+	private Integer breakCode;
+	/**
+	 * 归零依据（1全局；2集团；3组织）
+	 * 编码达到最大值时使用
+	 */
+	private Integer zeroReason;
+	/**
+	 * 默认
+	 * 0 否;
+	 * 1 是。
+	 */
+	private Integer defaulted;
+	/**
+	 * 可编辑
+	 * 0 否；
+	 * 1 是。
+	 */
+	private Integer editable;
+	/**
+	 * 补位
+	 * 0 否；
+	 * 1 是。
+	 */
+	private Integer coverPosition;
+	/**
+	 * 时间格式
+	 */
+	private String timeFormat;
+	/**
+	 * 总长度
+	 */
+	private Integer totalLenght;
 
-	private Long id;
+	public CodeRuleBean() {
+	}
 
-    private String ruleCode;
+	public Integer getRuleLevel() {
+		return ruleLevel;
+	}
 
-    private String ruleName;
+	public void setRuleLevel(Integer ruleLevel) {
+		this.ruleLevel = ruleLevel;
+	}
 
-    private String businessCode;
+	public Integer getGroupId() {
+		return groupId;
+	}
 
-    private Integer codeType;
+	public void setGroupId(Integer groupId) {
+		this.groupId = groupId;
+	}
 
-    private Integer isBreakCode;
+	public String getBizEntity() {
+		return bizEntity;
+	}
 
-    private Integer zeroReason;
+	public void setBizEntity(String bizEntity) {
+		this.bizEntity = bizEntity;
+	}
 
-    private String orgId;
+	public String getRuleCode() {
+		return ruleCode;
+	}
 
-    private Integer isDefault;
+	public void setRuleCode(String ruleCode) {
+		this.ruleCode = ruleCode;
+	}
 
-    private Integer isUse;
+	public String getRuleName() {
+		return ruleName;
+	}
 
-    private String timeFormat;
+	public void setRuleName(String ruleName) {
+		this.ruleName = ruleName;
+	}
 
-    private Integer isEdit;
+	public Integer getState() {
+		return state;
+	}
 
-    private Integer isFlow;
+	public void setState(Integer state) {
+		this.state = state;
+	}
 
-    private Integer sumLongth;
+	public Integer getCodeWay() {
+		return codeWay;
+	}
 
-    public Long getId() {
-        return id;
-    }
+	public void setCodeWay(Integer codeWay) {
+		this.codeWay = codeWay;
+	}
 
-    public void setId(Long id) {
-        this.id = id;
-    }
+	public Integer getBreakCode() {
+		return breakCode;
+	}
 
-    public String getRuleCode() {
-        return ruleCode;
-    }
+	public void setBreakCode(Integer breakCode) {
+		this.breakCode = breakCode;
+	}
 
-    public void setRuleCode(String ruleCode) {
-        this.ruleCode = ruleCode;
-    }
+	public Integer getZeroReason() {
+		return zeroReason;
+	}
 
-    public String getRuleName() {
-        return ruleName;
-    }
+	public void setZeroReason(Integer zeroReason) {
+		this.zeroReason = zeroReason;
+	}
 
-    public void setRuleName(String ruleName) {
-        this.ruleName = ruleName;
-    }
+	public Integer getDefaulted() {
+		return defaulted;
+	}
 
-    public String getBusinessCode() {
-        return businessCode;
-    }
+	public void setDefaulted(Integer defaulted) {
+		this.defaulted = defaulted;
+	}
 
-    public void setBusinessCode(String businessCode) {
-        this.businessCode = businessCode;
-    }
+	public Integer getEditable() {
+		return editable;
+	}
 
-    public Integer getCodeType() {
-        return codeType;
-    }
+	public void setEditable(Integer editable) {
+		this.editable = editable;
+	}
 
-    public void setCodeType(Integer codeType) {
-        this.codeType = codeType;
-    }
+	public Integer getCoverPosition() {
+		return coverPosition;
+	}
 
-    public Integer getIsBreakCode() {
-        return isBreakCode;
-    }
+	public void setCoverPosition(Integer coverPosition) {
+		this.coverPosition = coverPosition;
+	}
 
-    public void setIsBreakCode(Integer isBreakCode) {
-        this.isBreakCode = isBreakCode;
-    }
+	public String getTimeFormat() {
+		return timeFormat;
+	}
 
-    public Integer getZeroReason() {
-        return zeroReason;
-    }
+	public void setTimeFormat(String timeFormat) {
+		this.timeFormat = timeFormat;
+	}
 
-    public void setZeroReason(Integer zeroReason) {
-        this.zeroReason = zeroReason;
-    }
+	public Integer getTotalLenght() {
+		return totalLenght;
+	}
 
-    public String getOrgId() {
-        return orgId;
-    }
+	public void setTotalLenght(Integer totalLenght) {
+		this.totalLenght = totalLenght;
+	}
 
-    public void setOrgId(String orgId) {
-        this.orgId = orgId;
-    }
-
-    public Integer getIsDefault() {
-        return isDefault;
-    }
-
-    public void setIsDefault(Integer isDefault) {
-        this.isDefault = isDefault;
-    }
-
-    public Integer getIsUse() {
-        return isUse;
-    }
-
-    public void setIsUse(Integer isUse) {
-        this.isUse = isUse;
-    }
-
-    public String getTimeFormat() {
-        return timeFormat;
-    }
-
-    public void setTimeFormat(String timeFormat) {
-        this.timeFormat = timeFormat;
-    }
-
-    public Integer getIsEdit() {
-        return isEdit;
-    }
-
-    public void setIsEdit(Integer isEdit) {
-        this.isEdit = isEdit;
-    }
-
-    public Integer getIsFlow() {
-        return isFlow;
-    }
-
-    public void setIsFlow(Integer isFlow) {
-        this.isFlow = isFlow;
-    }
-
-    public Integer getSumLongth() {
-        return sumLongth;
-    }
-
-    public void setSumLongth(Integer sumLongth) {
-        this.sumLongth = sumLongth;
-    }
-
-    @Override
-    public String toString() {
-        return "CodeId{" +
-                "id=" + id +
-                ", ruleCode='" + ruleCode + '\'' +
-                ", ruleName='" + ruleName + '\'' +
-                ", businessCode='" + businessCode + '\'' +
-                ", codeType=" + codeType +
-                ", isBreakCode=" + isBreakCode +
-                ", zeroReason=" + zeroReason +
-                ", orgId='" + orgId + '\'' +
-                ", isDefault=" + isDefault +
-                ", isUse=" + isUse +
-                ", timeFormat='" + timeFormat + '\'' +
-                ", isEdit=" + isEdit +
-                ", isFlow=" + isFlow +
-                ", sumLongth=" + sumLongth +
-                '}';
-    }
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("CodeRuleBean{");
+		sb.append(super.toString());
+		sb.append(", ruleLevel=").append(ruleLevel);
+		sb.append(", groupId=").append(groupId);
+		sb.append(", bizEntity='").append(bizEntity).append('\'');
+		sb.append(", ruleCode='").append(ruleCode).append('\'');
+		sb.append(", ruleName='").append(ruleName).append('\'');
+		sb.append(", state=").append(state);
+		sb.append(", codeWay=").append(codeWay);
+		sb.append(", breakCode=").append(breakCode);
+		sb.append(", zeroReason=").append(zeroReason);
+		sb.append(", defaulted=").append(defaulted);
+		sb.append(", editable=").append(editable);
+		sb.append(", coverPosition=").append(coverPosition);
+		sb.append(", timeFormat='").append(timeFormat).append('\'');
+		sb.append(", totalLenght=").append(totalLenght);
+		sb.append('}');
+		return sb.toString();
+	}
 }

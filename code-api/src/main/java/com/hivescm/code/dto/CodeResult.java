@@ -1,8 +1,10 @@
 package com.hivescm.code.dto;
 
+import java.io.Serializable;
+
 /**
  * <b>Description:</b><br>
- * ${TODO}(请描述本类的作用) <br><br>
+ * 编码结果 <br><br>
  * <p>
  * <b>Note</b><br>
  * <b>ProjectName:</b> base-code
@@ -13,5 +15,42 @@ package com.hivescm.code.dto;
  * @version 1.0
  * @since JDK 1.8
  */
-public class CodeResult {
+public class CodeResult implements Serializable{
+	private static final long serialVersionUID = 1L;
+	/**
+	 * 生成编码
+	 */
+	private String code;
+	/**
+	 * 规则ID
+	 */
+	private Long ruleId;
+
+	public CodeResult() {
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
+	}
+
+	public Long getRuleId() {
+		return ruleId;
+	}
+
+	public void setRuleId(Long ruleId) {
+		this.ruleId = ruleId;
+	}
+
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("CodeResult{");
+		sb.append("code='").append(code).append('\'');
+		sb.append(", ruleId=").append(ruleId);
+		sb.append('}');
+		return sb.toString();
+	}
 }

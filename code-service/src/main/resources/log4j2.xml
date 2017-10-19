@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="ERROR" packages="com.weidian.open.log.tps">
 	<Properties>
-		<Property name="base.dir">/data/logs/demo</Property>
+		<Property name="base.dir">../logs</Property>
 		<Property name="pattern">requestTime:%d|traceID:$${ctx:traceID}|SERVER_IP:$${ctx:SERVER_IP}|PROJECT_NAME:$${ctx:PROJECT_NAME}|USER_IP:$${ctx:USER_IP}|%m%n</Property>
 	</Properties>
 	<Appenders>
@@ -25,7 +25,8 @@
 				<pattern>${pattern}</pattern>
 			</PatternLayout>
 			<Policies>
-				<SizeBasedTriggeringPolicy size="1G" />
+				<TimeBasedTriggeringPolicy interval="1" modulate="true"/>
+				<!--<SizeBasedTriggeringPolicy size="1G" />-->
 			</Policies>
 		</RollingFile>
 		<!-- 错误日志 -->

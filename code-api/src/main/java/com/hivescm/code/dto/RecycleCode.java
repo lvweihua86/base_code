@@ -15,7 +15,7 @@ import java.io.Serializable;
  * @version 1.0
  * @since JDK 1.8
  */
-public class RecycleCodeReq implements Serializable{
+public class RecycleCode implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	/**
@@ -28,7 +28,7 @@ public class RecycleCodeReq implements Serializable{
 	 */
 	private String code;
 
-	public RecycleCodeReq() {
+	public RecycleCode() {
 	}
 
 }

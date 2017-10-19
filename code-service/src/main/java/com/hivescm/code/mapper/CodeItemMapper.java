@@ -1,36 +1,21 @@
 package com.hivescm.code.mapper;
 
-import com.hivescm.code.dto.CodeItem;
 import com.mogujie.trade.db.DataSourceRouting;
 
 
-import java.util.List;
-import java.util.Map;
-
-@DataSourceRouting(dataSource="generated",isReadWriteSplitting=false, table = "base_code_id_item")
-public interface CodeIDItemMapper {
-    int deleteByPrimaryKey(Long id);
-
-    int insert(CodeItem record);
-
-    int insertSelective(CodeItem record);
-
-    CodeItem selectByPrimaryKey(Long id);
-
-    int updateByPrimaryKeySelective(CodeItem record);
-
-    int updateByPrimaryKey(CodeItem record);
-
-    List<CodeItem> getCodeIDItemsByCodeId(long codeId);
-
-    List<CodeItem> getFlowColumnByCodeId(long codeId);
-
-    CodeItem selectByCodeId(Long codeId);
-
-    int geFlowTypeByCodeId(Long codeId);
-    
-    int getFlowLengthByCodeId(Long codeId);
-    int batchUpdateBycodeId(Long codeId,Map<Integer,Integer> map);
-    int batchDelete(long[] ids);
-    
+/**
+ * <b>Description:</b><br>
+ * 编码项 mapper <br><br>
+ * <p>
+ * <b>Note</b><br>
+ * <b>ProjectName:</b> base-code
+ * <br><b>PackageName:</b> com.hivescm.code.bean
+ * <br><b>Date:</b> 2017/10/19 17:17
+ *
+ * @author DongChunfu
+ * @version 1.0
+ * @since JDK 1.8
+ */
+@DataSourceRouting(dataSource = "base_code", isReadWriteSplitting = false, table = "base_code_item")
+public interface CodeItemMapper {
 }
