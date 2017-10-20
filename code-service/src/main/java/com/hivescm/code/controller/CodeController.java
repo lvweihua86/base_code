@@ -1,5 +1,6 @@
 package com.hivescm.code.controller;
 
+import com.hivescm.code.common.Constants;
 import com.hivescm.code.controller.doc.ICodeDoc;
 import com.hivescm.code.dto.CodeResult;
 import com.hivescm.code.dto.GenerateCode;
@@ -45,27 +46,43 @@ public class CodeController implements ICodeDoc {
 			LOGGER.info("generate code response,result:{},param:{}.", codeResult, reqParam);
 			return DataResult.success(codeResult, CodeResult.class);
 		} catch (CodeException ce) {
-			LOGGER.error("generate code error,param:" + reqParam, ce);
+			LOGGER.error("generate code failed,param:" + reqParam, ce);
 			return DataResult.faild(ce.getErrorCode(), ce.getMessage());
 		} catch (Exception ex) {
 			LOGGER.error("generate code error,param:" + reqParam, ex);
-			return DataResult.faild(CodeErrorCode.CODE_SERVICE_CODE, "编码系统错误");
+			return DataResult.faild(CodeErrorCode.CODE_SYSTEM_ERROR_CODE, Constants.CODE_SERVICE_ERROR);
 		}
 	}
 
 	@RequestMapping(value = "/recycleCode", method = RequestMethod.POST)
 	public DataResult<Boolean> recycleCode(@RequestBody RecycleCode reqParam) {
-		return DataResult.success(Boolean.TRUE, Boolean.class);
+		LOGGER.info("recycle code request,param:{}.", reqParam);
+		try {
+			// TODO
+			return DataResult.success(Boolean.TRUE, Boolean.class);
+		} catch (CodeException ce) {
+			LOGGER.error("recycle code failed,param:" + reqParam, ce);
+			return DataResult.faild(ce.getErrorCode(), ce.getMessage());
+		} catch (Exception ex) {
+			LOGGER.error("recycle code error,param:" + reqParam, ex);
+			return DataResult.faild(CodeErrorCode.CODE_SYSTEM_ERROR_CODE, Constants.CODE_SERVICE_ERROR);
+		}
+
 	}
 
 	@Override
 	@RequestMapping(value = "/initCodeTemplate", method = RequestMethod.GET)
 	public DataResult<Boolean> initCodeTemplate() {
+		LOGGER.info("init code template");
 		try {
-			codeService.initCodeIDTemplate();
-		} catch (Exception e) {
-			return DataResult.faild(5354, "初始化编码id模版失败");
+			// TODO
+			return DataResult.success(Boolean.TRUE, Boolean.class);
+		} catch (CodeException ce) {
+			LOGGER.error("init code template failed", ce);
+			return DataResult.faild(ce.getErrorCode(), ce.getMessage());
+		} catch (Exception ex) {
+			LOGGER.error("init code template error", ex);
+			return DataResult.faild(CodeErrorCode.CODE_SYSTEM_ERROR_CODE, Constants.CODE_SERVICE_ERROR);
 		}
-		return DataResult.success(Boolean.TRUE, Boolean.class);
 	}
 }

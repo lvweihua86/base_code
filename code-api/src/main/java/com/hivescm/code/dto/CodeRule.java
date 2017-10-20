@@ -6,21 +6,19 @@ import java.util.List;
 public class CodeRule implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/**
-	 * 创建人
-	 */
-	private Integer createUser;
-	/**
 	 * 规则级别
+	 * <li>1,平台</li>
+	 * <li>2,集团</li>
 	 */
-	private Integer rule_level;
+	private Integer level;
 	/**
-	 * 集团ID（全局为0）
+	 * 集团ID（平台为1）
 	 */
 	private Integer groupId;
 	/**
-	 * 业务实体
+	 * 业务编码
 	 */
-	private String bizEntity;
+	private String bizCode;
 	/**
 	 * 规则编码
 	 */
@@ -30,46 +28,42 @@ public class CodeRule implements Serializable {
 	 */
 	private String ruleName;
 	/**
-	 * 状态
-	 * 1 未用；
-	 * 2 启用；
-	 * 3 停用；
-	 * 4 删除。
-	 */
-	private Integer state;
-	/**
 	 * 编码方式
+	 * <li>1,保存前编码</li>
+	 * <li>2,保存后编码</li>
 	 */
 	private Integer codeWay;
 	/**
 	 * 断码补码
-	 * 0 否；
-	 * 1 是
+	 * <li>0,否</li>
+	 * <li>1,是</li>
 	 */
 	private Integer breakCode;
 	/**
-	 * 归零依据（1全局；2集团；3组织）
-	 * 编码达到最大值时使用
+	 * 归零依据
+	 * <li>1,平台</li>
+	 * <li>2,集团</li>
+	 * <li>3,组织</li>
 	 */
 	private Integer zeroReason;
 	/**
 	 * 默认
-	 * 0 否;
-	 * 1 是。
+	 * <li>0,否</li>
+	 * <li>1,是</li>
 	 */
 	private Integer defaulted;
 	/**
 	 * 可编辑
-	 * 0 否；
-	 * 1 是。
+	 * <li>0,否</li>
+	 * <li>1,是</li>
 	 */
 	private Integer editable;
 	/**
 	 * 补位
-	 * 0 否；
-	 * 1 是。
+	 * <li>0,否</li>
+	 * <li>1,是</li>
 	 */
-	private Integer coverPosition;
+	private Integer cover;
 	/**
 	 * 时间格式
 	 */
@@ -86,20 +80,12 @@ public class CodeRule implements Serializable {
 	public CodeRule() {
 	}
 
-	public Integer getCreateUser() {
-		return createUser;
+	public Integer getLevel() {
+		return level;
 	}
 
-	public void setCreateUser(Integer createUser) {
-		this.createUser = createUser;
-	}
-
-	public Integer getRule_level() {
-		return rule_level;
-	}
-
-	public void setRule_level(Integer rule_level) {
-		this.rule_level = rule_level;
+	public void setLevel(Integer level) {
+		this.level = level;
 	}
 
 	public Integer getGroupId() {
@@ -110,12 +96,12 @@ public class CodeRule implements Serializable {
 		this.groupId = groupId;
 	}
 
-	public String getBizEntity() {
-		return bizEntity;
+	public String getBizCode() {
+		return bizCode;
 	}
 
-	public void setBizEntity(String bizEntity) {
-		this.bizEntity = bizEntity;
+	public void setBizCode(String bizCode) {
+		this.bizCode = bizCode;
 	}
 
 	public String getRuleCode() {
@@ -132,14 +118,6 @@ public class CodeRule implements Serializable {
 
 	public void setRuleName(String ruleName) {
 		this.ruleName = ruleName;
-	}
-
-	public Integer getState() {
-		return state;
-	}
-
-	public void setState(Integer state) {
-		this.state = state;
 	}
 
 	public Integer getCodeWay() {
@@ -182,12 +160,12 @@ public class CodeRule implements Serializable {
 		this.editable = editable;
 	}
 
-	public Integer getCoverPosition() {
-		return coverPosition;
+	public Integer getCover() {
+		return cover;
 	}
 
-	public void setCoverPosition(Integer coverPosition) {
-		this.coverPosition = coverPosition;
+	public void setCover(Integer cover) {
+		this.cover = cover;
 	}
 
 	public String getTimeFormat() {
@@ -217,19 +195,17 @@ public class CodeRule implements Serializable {
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("CodeRule{");
-		sb.append("createUser=").append(createUser);
-		sb.append(", rule_level=").append(rule_level);
+		sb.append("level=").append(level);
 		sb.append(", groupId=").append(groupId);
-		sb.append(", bizEntity='").append(bizEntity).append('\'');
+		sb.append(", bizCode='").append(bizCode).append('\'');
 		sb.append(", ruleCode='").append(ruleCode).append('\'');
 		sb.append(", ruleName='").append(ruleName).append('\'');
-		sb.append(", state=").append(state);
 		sb.append(", codeWay=").append(codeWay);
 		sb.append(", breakCode=").append(breakCode);
 		sb.append(", zeroReason=").append(zeroReason);
 		sb.append(", defaulted=").append(defaulted);
 		sb.append(", editable=").append(editable);
-		sb.append(", coverPosition=").append(coverPosition);
+		sb.append(", cover=").append(cover);
 		sb.append(", timeFormat='").append(timeFormat).append('\'');
 		sb.append(", totalLenght=").append(totalLenght);
 		sb.append(", codeItems=").append(codeItems);

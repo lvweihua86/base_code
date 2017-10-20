@@ -1,6 +1,7 @@
 package com.hivescm.code.controller;
 
 import com.hivescm.cache.client.JedisClient;
+import com.hivescm.code.common.Constants;
 import com.hivescm.code.controller.doc.ICodeRuleDoc;
 import com.hivescm.code.dto.CodeRule;
 import com.hivescm.code.exception.CodeErrorCode;
@@ -40,9 +41,6 @@ public class CodeRuleController implements ICodeRuleDoc {
 	@Resource
 	private CodeRuleService codeRuleService;
 
-	@Resource
-	private CodeItemService codeItemService;
-
 	@Autowired
 	private JedisClient jedisClient;
 
@@ -57,11 +55,11 @@ public class CodeRuleController implements ICodeRuleDoc {
 
 			return DataResult.success(Boolean.TRUE, Boolean.class);
 		} catch (CodeException ce) {
-			LOGGER.error("add code rule error,param:" + reqParam, ce);
+			LOGGER.error("add code rule failed,param:" + reqParam, ce);
 			return DataResult.faild(ce.getErrorCode(), ce.getMessage());
 		} catch (Exception ex) {
 			LOGGER.error("add code rule error,param:" + reqParam, ex);
-			return DataResult.faild(CodeErrorCode.CODE_SERVICE_CODE, "编码系统错误");
+			return DataResult.faild(CodeErrorCode.CODE_SYSTEM_ERROR_CODE, Constants.CODE_SERVICE_ERROR);
 		}
 	}
 

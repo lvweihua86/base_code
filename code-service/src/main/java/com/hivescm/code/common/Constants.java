@@ -14,6 +14,14 @@ package com.hivescm.code.common;
  * @since JDK 1.8
  */
 public class Constants {
+
+    public static final String CODE_SERVICE_ERROR="编码系统错误";
+
+    /**
+     * 编码规则编码，业务编码
+     */
+    public static final String CODE_RULE_CODE_BIZ_CODE="CODE_RULE_CODE";
+
     //编码id  对应的 业务单元+组织id
     public static final String CODEID_BUSINESSCODE_ORGID = "DYBM";
     public static final String GLOBAL_FLOW_NUMBER = "QJLS";
