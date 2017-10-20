@@ -14,4 +14,11 @@ package com.hivescm.code.utils;
  * @since JDK 1.8
  */
 public class DateUtil {
+	/**
+	 * 获取当前时间（单位 秒 ）
+	 * @return
+	 */
+	public static long currentSecond() {
+		return System.currentTimeMillis() / 1000;
+	}
 }

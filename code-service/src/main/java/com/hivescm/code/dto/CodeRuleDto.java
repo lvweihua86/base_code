@@ -3,89 +3,75 @@ package com.hivescm.code.dto;
 import java.io.Serializable;
 import java.util.List;
 
-public class CodeRule implements Serializable {
+public class CodeRuleDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/**
-	 * 规则级别
+	 * 规则级别（必填）
 	 * <li>1,平台</li>
 	 * <li>2,集团</li>
 	 */
-	private Integer level;
+	private Integer ruleLevel;
 	/**
-	 * 集团ID（平台为1）
+	 * 集团ID（平台为1）（必填）
 	 */
 	private Integer groupId;
 	/**
-	 * 业务编码
+	 * 业务编码（必填）
 	 */
 	private String bizCode;
 	/**
-	 * 规则编码
-	 */
-	private String ruleCode;
-	/**
-	 * 规则名称
+	 * 规则名称（必填）
 	 */
 	private String ruleName;
 	/**
-	 * 编码方式
+	 * 编码方式（选填）
 	 * <li>1,保存前编码</li>
 	 * <li>2,保存后编码</li>
 	 */
-	private Integer codeWay;
+	//private Integer codeWay = 1;
 	/**
-	 * 断码补码
+	 * 断码补码（选填）
 	 * <li>0,否</li>
 	 * <li>1,是</li>
 	 */
-	private Integer breakCode;
+	//private Integer breakCode = 0;
 	/**
-	 * 归零依据
+	 * 归零依据（选填）
 	 * <li>1,平台</li>
 	 * <li>2,集团</li>
 	 * <li>3,组织</li>
 	 */
-	private Integer zeroReason;
+	private Integer zeroReason = 1;
 	/**
-	 * 默认
+	 * 默认（选填）
 	 * <li>0,否</li>
 	 * <li>1,是</li>
 	 */
-	private Integer defaulted;
+	private Integer defaulted = 0;
 	/**
-	 * 可编辑
+	 * 补位（选填）
 	 * <li>0,否</li>
 	 * <li>1,是</li>
 	 */
-	private Integer editable;
+	//private Integer cover = 1;
 	/**
-	 * 补位
-	 * <li>0,否</li>
-	 * <li>1,是</li>
+	 * 时间格式（选填）
 	 */
-	private Integer cover;
+	//private String timeFormat = "yyyyMMdd";
 	/**
-	 * 时间格式
+	 * 编码项(1~5项)
 	 */
-	private String timeFormat;
-	/**
-	 * 总长度
-	 */
-	private Integer totalLenght;
-	/**
-	 * 编码项（5个）
-	 */
-	private List<CodeItem> codeItems;
+	private List<CodeItemDto> codeItems;
 
-	public CodeRule() {
+	public CodeRuleDto() {
 	}
 
-	public Integer getLevel() {
-		return level;
+	public Integer getRuleLevel() {
+		return ruleLevel;
 	}
 
-	public void setLevel(Integer level) {
-		this.level = level;
+	public void setRuleLevel(Integer ruleLevel) {
+		this.ruleLevel = ruleLevel;
 	}
 
 	public Integer getGroupId() {
@@ -104,14 +90,6 @@ public class CodeRule implements Serializable {
 		this.bizCode = bizCode;
 	}
 
-	public String getRuleCode() {
-		return ruleCode;
-	}
-
-	public void setRuleCode(String ruleCode) {
-		this.ruleCode = ruleCode;
-	}
-
 	public String getRuleName() {
 		return ruleName;
 	}
@@ -120,7 +98,7 @@ public class CodeRule implements Serializable {
 		this.ruleName = ruleName;
 	}
 
-	public Integer getCodeWay() {
+	/*public Integer getCodeWay() {
 		return codeWay;
 	}
 
@@ -134,7 +112,7 @@ public class CodeRule implements Serializable {
 
 	public void setBreakCode(Integer breakCode) {
 		this.breakCode = breakCode;
-	}
+	}*/
 
 	public Integer getZeroReason() {
 		return zeroReason;
@@ -152,15 +130,7 @@ public class CodeRule implements Serializable {
 		this.defaulted = defaulted;
 	}
 
-	public Integer getEditable() {
-		return editable;
-	}
-
-	public void setEditable(Integer editable) {
-		this.editable = editable;
-	}
-
-	public Integer getCover() {
+	/*public Integer getCover() {
 		return cover;
 	}
 
@@ -174,40 +144,29 @@ public class CodeRule implements Serializable {
 
 	public void setTimeFormat(String timeFormat) {
 		this.timeFormat = timeFormat;
-	}
+	}*/
 
-	public Integer getTotalLenght() {
-		return totalLenght;
-	}
-
-	public void setTotalLenght(Integer totalLenght) {
-		this.totalLenght = totalLenght;
-	}
-
-	public List<CodeItem> getCodeItems() {
+	public List<CodeItemDto> getCodeItems() {
 		return codeItems;
 	}
 
-	public void setCodeItems(List<CodeItem> codeItems) {
+	public void setCodeItems(List<CodeItemDto> codeItems) {
 		this.codeItems = codeItems;
 	}
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("CodeRule{");
-		sb.append("level=").append(level);
+		final StringBuilder sb = new StringBuilder("CodeRuleDto{");
+		sb.append("ruleLevel=").append(ruleLevel);
 		sb.append(", groupId=").append(groupId);
 		sb.append(", bizCode='").append(bizCode).append('\'');
-		sb.append(", ruleCode='").append(ruleCode).append('\'');
 		sb.append(", ruleName='").append(ruleName).append('\'');
-		sb.append(", codeWay=").append(codeWay);
-		sb.append(", breakCode=").append(breakCode);
+		//sb.append(", codeWay=").append(codeWay);
+		//sb.append(", breakCode=").append(breakCode);
 		sb.append(", zeroReason=").append(zeroReason);
 		sb.append(", defaulted=").append(defaulted);
-		sb.append(", editable=").append(editable);
-		sb.append(", cover=").append(cover);
-		sb.append(", timeFormat='").append(timeFormat).append('\'');
-		sb.append(", totalLenght=").append(totalLenght);
+		//sb.append(", cover=").append(cover);
+		//sb.append(", timeFormat='").append(timeFormat).append('\'');
 		sb.append(", codeItems=").append(codeItems);
 		sb.append('}');
 		return sb.toString();

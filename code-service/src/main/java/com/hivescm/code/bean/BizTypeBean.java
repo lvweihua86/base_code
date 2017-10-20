@@ -16,6 +16,12 @@ package com.hivescm.code.bean;
 public class BizTypeBean extends BaseBean {
 	private static final long serialVersionUID = 1L;
 	/**
+	 * 规则级别
+	 * <li>1,平台</li>
+	 * <li>2,通用</li>
+	 */
+	private Integer typeLevel;
+	/**
 	 * 系统名称
 	 */
 	private String systemName;
@@ -29,6 +35,14 @@ public class BizTypeBean extends BaseBean {
 	private String bizCode;
 
 	public BizTypeBean() {
+	}
+
+	public Integer getTypeLevel() {
+		return typeLevel;
+	}
+
+	public void setTypeLevel(Integer typeLevel) {
+		this.typeLevel = typeLevel;
 	}
 
 	public String getSystemName() {
@@ -59,6 +73,7 @@ public class BizTypeBean extends BaseBean {
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("BizTypeBean{");
 		sb.append(super.toString());
+		sb.append(", typeLevel=").append(typeLevel);
 		sb.append(", systemName='").append(systemName).append('\'');
 		sb.append(", bizName='").append(bizName).append('\'');
 		sb.append(", bizCode='").append(bizCode).append('\'');

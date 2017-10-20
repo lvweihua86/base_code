@@ -1,10 +1,8 @@
-package com.hivescm.code.dto;
-
-import com.hivescm.code.bean.BaseBean;
+package com.hivescm.code.bean;
 
 /**
  * <b>Description:</b><br>
- * 业务实体 <br><br>
+ * 业务实体数据简要信息 <br><br>
  * <p>
  * <b>Note</b><br>
  * <b>ProjectName:</b> base-code
@@ -15,8 +13,19 @@ import com.hivescm.code.bean.BaseBean;
  * @version 1.0
  * @since JDK 1.8
  */
-public class BizTypeDetailDto extends BaseBean {
+public class BizTypeInfoBean {
 	private static final long serialVersionUID = 1L;
+
+	/**
+	 * 业务类型ID
+	 */
+	private Integer id;
+	/**
+	 * 规则级别
+	 * <li>1,平台</li>
+	 * <li>2,通用</li>
+	 */
+	private Integer typeLevel;
 	/**
 	 * 系统名称
 	 */
@@ -30,7 +39,23 @@ public class BizTypeDetailDto extends BaseBean {
 	 */
 	private String bizCode;
 
-	public BizTypeDetailDto() {
+	public BizTypeInfoBean() {
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
+	}
+
+	public Integer getTypeLevel() {
+		return typeLevel;
+	}
+
+	public void setTypeLevel(Integer typeLevel) {
+		this.typeLevel = typeLevel;
 	}
 
 	public String getSystemName() {
@@ -59,8 +84,9 @@ public class BizTypeDetailDto extends BaseBean {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("BizTypeBean{");
-		sb.append(super.toString());
+		final StringBuilder sb = new StringBuilder("BizTypeInfoBean{");
+		sb.append("id=").append(id);
+		sb.append(", typeLevel=").append(typeLevel);
 		sb.append(", systemName='").append(systemName).append('\'');
 		sb.append(", bizName='").append(bizName).append('\'');
 		sb.append(", bizCode='").append(bizCode).append('\'');

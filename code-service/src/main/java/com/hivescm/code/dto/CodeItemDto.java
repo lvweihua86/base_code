@@ -1,33 +1,16 @@
-package com.hivescm.code.bean;
+package com.hivescm.code.dto;
 
 import java.io.Serializable;
 
-/**
- * <b>Description:</b><br>
- * 编码项实体数据 <br><br>
- * <p>
- * <b>Note</b><br>
- * <b>ProjectName:</b> base-code
- * <br><b>PackageName:</b> com.hivescm.code.bean
- * <br><b>Date:</b> 2017/10/19 17:17
- *
- * @author DongChunfu
- * @version 1.0
- * @since JDK 1.8
- */
-public class CodeItemBean extends BaseBean implements Serializable {
+public class CodeItemDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 
 	/**
-	 * 编码规则ID
-	 */
-	private Long ruleId;
-	/**
-	 * 顺序（5段）
+	 * 段顺序（1~5段，大于零，底层再排序）（必填）
 	 */
 	private Integer orderNum;
 	/**
-	 * 项类型
+	 * 段类型（必填）
 	 * 1常量;
 	 * 2字符串;
 	 * 3时间类型;
@@ -35,49 +18,45 @@ public class CodeItemBean extends BaseBean implements Serializable {
 	 */
 	private Integer itemType;
 	/**
-	 * 项值
+	 * 段值
+	 * 1 常量 ，常量值
+	 * 2 字符 ，{@link BizTypeMetadataDto#metadataName}
+	 * 3 时间 ，{@link BizTypeMetadataDto#metadataName}
+	 * 4 流水 ，可空
 	 */
 	private String itemValue;
 	/**
-	 * 项长
+	 * 段长度，若超长保左截右
 	 */
 	private Integer itemLength;
 	/**
-	 * 流水依据
+	 * 流水依据（不填）
 	 * 0 否
 	 * 1 是
 	 */
-	private Integer serial;
+	private Integer serial = 0;
 	/**
-	 * 流水依据
+	 * 流水类型（不填）
 	 * 0:不流水;
 	 * 1:按日流水;
 	 * 2:按月流水;
 	 * 3:按年流水;
 	 * 4:按字符串流水;
 	 */
-	private Integer serialType;
+	private Integer serialType = 0;
 	/**
-	 * 补位方式
+	 * 补位方式（不填）
 	 * 1左补位；
 	 * 2右补位;
 	 * 3不补位。
 	 */
-	private Integer coverWay;
+	private Integer coverWay = 1;
 	/**
 	 * 补位字符
 	 */
-	private String coverChar;
+	private Character coverChar = '0';
 
-	public CodeItemBean() {
-	}
-
-	public Long getRuleId() {
-		return ruleId;
-	}
-
-	public void setRuleId(Long ruleId) {
-		this.ruleId = ruleId;
+	public CodeItemDto() {
 	}
 
 	public Integer getOrderNum() {
@@ -136,26 +115,25 @@ public class CodeItemBean extends BaseBean implements Serializable {
 		this.coverWay = coverWay;
 	}
 
-	public String getCoverChar() {
+	public Character getCoverChar() {
 		return coverChar;
 	}
 
-	public void setCoverChar(String coverChar) {
+	public void setCoverChar(Character coverChar) {
 		this.coverChar = coverChar;
 	}
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("CodeItemBean{");
-		sb.append("ruleId=").append(ruleId);
-		sb.append(", orderNum=").append(orderNum);
+		final StringBuilder sb = new StringBuilder("CodeItemDto{");
+		sb.append("orderNum=").append(orderNum);
 		sb.append(", itemType=").append(itemType);
 		sb.append(", itemValue='").append(itemValue).append('\'');
 		sb.append(", itemLength=").append(itemLength);
 		sb.append(", serial=").append(serial);
 		sb.append(", serialType=").append(serialType);
 		sb.append(", coverWay=").append(coverWay);
-		sb.append(", coverChar='").append(coverChar).append('\'');
+		sb.append(", coverChar=").append(coverChar);
 		sb.append('}');
 		return sb.toString();
 	}

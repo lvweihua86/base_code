@@ -16,29 +16,54 @@ package com.hivescm.code.dto;
 public class BizTypeQueryDto {
 	private static final long serialVersionUID = 1L;
 	/**
-	 * 查询级别
-	 * <p>
-	 * <li>1,全部</li>
-	 * <li>2,平台</li>
-	 * <li>3,通用</li>
+	 * 用户ID（必填）
 	 */
-	private Integer queryLevel;
+	private Integer userId;
+	/**
+	 * 查询级别（必填）
+	 * <p>
+	 * <li>1,平台</li>
+	 * <li>2,通用</li>
+	 */
+	private Integer typeLevel;
+	/**
+	 * 系统名字（选填）
+	 */
+	private String systemName;
 
 	public BizTypeQueryDto() {
 	}
 
-	public Integer getQueryLevel() {
-		return queryLevel;
+	public Integer getUserId() {
+		return userId;
 	}
 
-	public void setQueryLevel(Integer queryLevel) {
-		this.queryLevel = queryLevel;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
+	}
+
+	public Integer getTypeLevel() {
+		return typeLevel;
+	}
+
+	public void setTypeLevel(Integer typeLevel) {
+		this.typeLevel = typeLevel;
+	}
+
+	public String getSystemName() {
+		return "%" + systemName + "%";
+	}
+
+	public void setSystemName(String systemName) {
+		this.systemName = systemName;
 	}
 
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("BizTypeQueryDto{");
-		sb.append("queryLevel=").append(queryLevel);
+		sb.append("userId=").append(userId);
+		sb.append(", typeLevel=").append(typeLevel);
+		sb.append(", systemName='").append(systemName).append('\'');
 		sb.append('}');
 		return sb.toString();
 	}

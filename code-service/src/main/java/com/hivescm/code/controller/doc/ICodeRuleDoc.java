@@ -1,10 +1,13 @@
 package com.hivescm.code.controller.doc;
 
-import com.hivescm.code.dto.CodeRule;
+import com.hivescm.code.dto.CodeRuleDto;
 import com.hivescm.common.domain.DataResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 /**
  * <b>Description:</b><br>
  * 编码规则 <br><br>
@@ -22,5 +25,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 public interface ICodeRuleDoc {
 
 	@ApiOperation(value = "新增编码规则", httpMethod = "POST")
-	DataResult addCodeRule(@RequestBody CodeRule codeRule);
+	@RequestMapping(value = "/addCodeRule", method = RequestMethod.POST)
+	DataResult addCodeRule(@RequestBody CodeRuleDto codeRuleDto);
 }

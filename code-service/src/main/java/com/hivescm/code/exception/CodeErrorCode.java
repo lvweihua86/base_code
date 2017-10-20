@@ -20,8 +20,15 @@ public class CodeErrorCode {
 	 */
 	public static final int CODE_SYSTEM_ERROR_CODE = 9999;
 
-	// 请求参数错误
-	public static final int REQ_PARAM_ERROR_CODE = 7000;
+	/**
+	 * 请求参数错误
+ 	 */
+	public static final int REQ_PARAM_ERROR_CODE = 1000;
+
+	/**
+	 * 数据重复
+	 */
+	public static final int DATE_CONFLIC_ERROR_CODE = 1001;
 
 
 	// 编码规则不存在

@@ -7,6 +7,8 @@ import com.hivescm.common.domain.DataResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
  * <b>Description:</b><br>
@@ -30,6 +32,7 @@ public interface ICodeDoc {
 	 * @return 编码
 	 */
 	@ApiOperation(value = "生成编码", httpMethod = "POST")
+	@RequestMapping(value = "/generateCode", method = RequestMethod.POST)
 	DataResult<CodeResult> generateCode(@RequestBody GenerateCode reqParam);
 
 	/**
@@ -39,6 +42,7 @@ public interface ICodeDoc {
 	 * @return <code>true</code>回收成功
 	 */
 	@ApiOperation(value = "回收编码", httpMethod = "POST")
+	@RequestMapping(value = "/recycleCode", method = RequestMethod.POST)
 	DataResult<Boolean> recycleCode(@RequestBody RecycleCode reqParam);
 
 	/**
@@ -47,5 +51,6 @@ public interface ICodeDoc {
 	 * @return <code>true</code>回收成功
 	 */
 	@ApiOperation(value = "初始化", httpMethod = "GET")
+	@RequestMapping(value = "/initCodeTemplate", method = RequestMethod.GET)
 	DataResult<Boolean> initCodeTemplate();
 }

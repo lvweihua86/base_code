@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hivescm.code.mapper.RuleItemRelationMapper">
+
+    <!--依据规则ID删除规则与项关系表-->
+    <delete id="deleteByRuleIds">
+        delete from base_code_rule_item_relation where rule_id in
+        <foreach collection="ruleIds" item="ruleId" open="(" separator="," close=")">
+            #{ruleId}
+        </foreach>
+    </delete>
+</mapper>

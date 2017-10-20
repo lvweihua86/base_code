@@ -1,18 +1,21 @@
 package com.hivescm.code.service.impl;
 
-import com.hivescm.cache.client.JedisClient;
 import com.hivescm.code.dto.CodeResult;
 import com.hivescm.code.dto.GenerateCode;
 import com.hivescm.code.mapper.CodeItemMapper;
 import com.hivescm.code.mapper.CodeRuleMapper;
+import com.hivescm.code.cache.CodeCacheData;
+import com.hivescm.code.cache.RedisCodeCache;
 import com.hivescm.code.service.CodeService;
-import com.hivescm.common.domain.DataResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.Resource;
+
 /**
  * <b>Description:</b><br>
  * 编码服务为实现 <br><br>
@@ -36,12 +39,23 @@ public class CodeServiceImpl implements CodeService {
 	@Autowired
 	private CodeItemMapper codeItemMapper;
 
-	@Autowired
-	private JedisClient jedisClient;
+	@Resource
+	private RedisCodeCache redisCodeCache;
 
 	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
 	public CodeResult generateCode(final GenerateCode reqParam) {
+
+		final CodeCacheData cacheData = redisCodeCache.getCacheData(reqParam);
+		if (cacheData.hasCaceh()) {
+			return generateCodeByCache(cacheData);
+		}
+
 		return null;
+	}
+
+	private CodeResult generateCodeByCache(final CodeCacheData cacheData) {
+		CodeResult codeResult = new CodeResult();
+		return codeResult;
 	}
 
 	@Override

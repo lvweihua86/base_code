@@ -2,28 +2,57 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hivescm.code.mapper.CodeRuleMapper">
-    <resultMap id="BaseResultMap" type="com.hivescm.code.bean.CodeRuleBean">
-        <id column="id" property="id"/>
-        <result column="rule_level" property="ruleLevel"/>
-        <result column="group_id" property="groupId"/>
-        <result column="biz_entity" property="bizEntity"/>
-        <result column="rule_code" property="ruleCode"/>
-        <result column="rule_name" property="ruleName"/>
-        <result column="state" property="state"/>
-        <result column="code_way" property="codeWay"/>
-        <result column="break_code" property="breakCode"/>
-        <result column="zero_reason" property="zeroReason"/>
-        <result column="defaulted" property="defaulted"/>
-        <result column="editable" property="editable"/>
-        <result column="cover_position" property="coverPosition"/>
-        <result column="time_format" property="timeFormat"/>
-        <result column="total_lenght" property="totalLenght"/>
-    </resultMap>
+    <sql id="base_insert_list">
+        id,
+        rule_level,
+        group_id,
+        biz_code,
+        rule_code,
+        rule_name,
+        code_way,
+        break_code,
+        zero_reason,
+        is_defaulte,
+        is_cover,
+        time_format,
+        total_lenght,
+        create_user,
+        create_time
+    </sql>
 
-    <sql id="Base_Column_List">
-    id, rule_level, group_id, biz_entity, rule_code, rule_name, state,
-    code_way, break_code, zero_reason, defaulted, editable, cover_position, time_format,total_lenght
-  </sql>
+    <insert id="addCodeRule" parameterType="com.hivescm.code.bean.CodeRuleBean" useGeneratedKeys="true" keyProperty="bean.id">
+        INSERT INTO base_code_rule
+        (
+        <include refid="base_insert_list"/>
+        )VALUES
+        (
+        #{bean.id},
+        #{bean.ruleLevel},
+        #{bean.groupId},
+        #{bean.bizCode},
+        #{bean.ruleCode},
+        #{bean.ruleName},
+        #{bean.codeWay},
+        #{bean.breakCode},
+        #{bean.zeroReason},
+        #{bean.defaulted},
+        #{bean.cover},
+        #{bean.timeFormat},
+        #{bean.totalLenght},
+        #{bean.createUser},
+        #{bean.create_time}
+        )
+    </insert>
 
+    <!--依据业务编码删除编码规则-->
+    <delete id="deleteByIds">
+        delete from base_code_rule where id in
+        <foreach collection="ruleIds" item="ruleId" open="(" separator="," close=")">
+            #{ruleId}
+        </foreach>
+    </delete>
 
+    <select id="queryRuleIdsByBizCode" parameterType="string" resultType="integer">
+        select id from base_code_rule where biz_code = #{bizCode}
+    </select>
 </mapper>

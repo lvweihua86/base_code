@@ -23,11 +23,6 @@ public class BaseBean implements Serializable {
 	 */
 	private Integer id;
 	/**
-	 * 数据状态
-	 * 1 未启用；2启用；3停用；4删除
-	 */
-	private int state;
-	/**
 	 * 创建人
 	 */
 	private Integer createUser;
@@ -53,14 +48,6 @@ public class BaseBean implements Serializable {
 
 	public void setId(Integer id) {
 		this.id = id;
-	}
-
-	public int getState() {
-		return state;
-	}
-
-	public void setState(int state) {
-		this.state = state;
 	}
 
 	public Long getCreateTime() {

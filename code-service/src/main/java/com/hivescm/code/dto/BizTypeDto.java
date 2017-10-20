@@ -1,8 +1,10 @@
 package com.hivescm.code.dto;
 
+import java.util.List;
+
 /**
  * <b>Description:</b><br>
- * 业务类型简要信息 <br><br>
+ * 业务实体 <br><br>
  * <p>
  * <b>Note</b><br>
  * <b>ProjectName:</b> base-code
@@ -13,12 +15,14 @@ package com.hivescm.code.dto;
  * @version 1.0
  * @since JDK 1.8
  */
-public class BizTypeInfoDto {
+public class BizTypeDto extends BaseCreateDto {
 	private static final long serialVersionUID = 1L;
 	/**
-	 * 业务类型ID
+	 * 规则级别
+	 * <li>1,平台</li>
+	 * <li>2,通用</li>
 	 */
-	private Integer id;
+	private Integer typeLevel;
 	/**
 	 * 系统名称
 	 */
@@ -32,15 +36,17 @@ public class BizTypeInfoDto {
 	 */
 	private String bizCode;
 
-	public BizTypeInfoDto() {
+	private List<BizTypeMetadataDto> metadatas;
+
+	public BizTypeDto() {
 	}
 
-	public Integer getId() {
-		return id;
+	public Integer getTypeLevel() {
+		return typeLevel;
 	}
 
-	public void setId(Integer id) {
-		this.id = id;
+	public void setTypeLevel(Integer typeLevel) {
+		this.typeLevel = typeLevel;
 	}
 
 	public String getSystemName() {
@@ -67,14 +73,23 @@ public class BizTypeInfoDto {
 		this.bizCode = bizCode;
 	}
 
+	public List<BizTypeMetadataDto> getMetadatas() {
+		return metadatas;
+	}
+
+	public void setMetadatas(List<BizTypeMetadataDto> metadatas) {
+		this.metadatas = metadatas;
+	}
+
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("BizTypeBean{");
+		final StringBuilder sb = new StringBuilder("BizTypeDto{");
 		sb.append(super.toString());
-		sb.append(", =id'").append(id).append('\'');
+		sb.append(", typeLevel=").append(typeLevel);
 		sb.append(", systemName='").append(systemName).append('\'');
 		sb.append(", bizName='").append(bizName).append('\'');
 		sb.append(", bizCode='").append(bizCode).append('\'');
+		sb.append(", metadatas='").append(metadatas).append('\'');
 		sb.append('}');
 		return sb.toString();
 	}

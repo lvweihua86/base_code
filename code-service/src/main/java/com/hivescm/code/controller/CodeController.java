@@ -13,8 +13,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 /**
@@ -38,7 +36,6 @@ public class CodeController implements ICodeDoc {
 	private CodeService codeService;
 
 	@Override
-	@RequestMapping(value = "/generateCode", method = RequestMethod.POST)
 	public DataResult<CodeResult> generateCode(@RequestBody GenerateCode reqParam) {
 		LOGGER.info("generate code request,param:{}.", reqParam);
 		try {
@@ -54,7 +51,7 @@ public class CodeController implements ICodeDoc {
 		}
 	}
 
-	@RequestMapping(value = "/recycleCode", method = RequestMethod.POST)
+	@Override
 	public DataResult<Boolean> recycleCode(@RequestBody RecycleCode reqParam) {
 		LOGGER.info("recycle code request,param:{}.", reqParam);
 		try {
@@ -71,7 +68,6 @@ public class CodeController implements ICodeDoc {
 	}
 
 	@Override
-	@RequestMapping(value = "/initCodeTemplate", method = RequestMethod.GET)
 	public DataResult<Boolean> initCodeTemplate() {
 		LOGGER.info("init code template");
 		try {

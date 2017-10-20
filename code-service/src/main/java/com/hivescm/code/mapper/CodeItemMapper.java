@@ -1,7 +1,10 @@
 package com.hivescm.code.mapper;
 
+import com.hivescm.code.bean.CodeItemBean;
 import com.mogujie.trade.db.DataSourceRouting;
+import org.apache.ibatis.annotations.Param;
 
+import java.util.List;
 
 /**
  * <b>Description:</b><br>
@@ -16,6 +19,15 @@ import com.mogujie.trade.db.DataSourceRouting;
  * @version 1.0
  * @since JDK 1.8
  */
-@DataSourceRouting(dataSource = "base_code", isReadWriteSplitting = false, table = "base_code_item")
+@DataSourceRouting(dataSource = "generated", isReadWriteSplitting = false, table = "base_code_item")
 public interface CodeItemMapper {
+
+	void batchAddCodeItem(@Param(value = "beans") List<CodeItemBean> beans ,@Param(value = "ruleId")Integer ruleId);
+
+	/**
+	 * 依据规则ID删除编码规则项
+	 *
+	 * @param ruleIds 规则ID集合
+	 */
+	Integer deleteByRuleIds(@Param(value = "ruleIds") List<Integer> ruleIds);
 }

@@ -1,8 +1,8 @@
-package com.hivescm.code.bean;
+package com.hivescm.code.dto;
 
 /**
  * <b>Description:</b><br>
- * 业务实体域数据实体 <br><br>
+ * 业务类型元数据 DTO <br><br>
  * <p>
  * <b>Note</b><br>
  * <b>ProjectName:</b> base-code
@@ -13,7 +13,7 @@ package com.hivescm.code.bean;
  * @version 1.0
  * @since JDK 1.8
  */
-public class BizTypeMetadataBean extends BaseBean {
+public class BizTypeMetadataDto extends BaseCreateDto {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * 类型ID
@@ -28,7 +28,7 @@ public class BizTypeMetadataBean extends BaseBean {
 	 */
 	private String metadataShow;
 
-	public BizTypeMetadataBean() {
+	public BizTypeMetadataDto() {
 	}
 
 	public Integer getTypeId() {

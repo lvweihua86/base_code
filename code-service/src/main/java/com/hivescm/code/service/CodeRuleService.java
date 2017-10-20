@@ -1,6 +1,6 @@
 package com.hivescm.code.service;
 
-import com.hivescm.code.dto.CodeRule;
+import com.hivescm.code.dto.CodeRuleDto;
 /**
  * <b>Description:</b><br>
  * 编码规则服务 <br><br>
@@ -19,8 +19,8 @@ public interface CodeRuleService {
 	/**
 	 * 新增编码规则
 	 *
-	 * @param codeRule 编码规则
+	 * @param codeRuleDto 编码规则
 	 * @return
 	 */
-	void addCodeRule(CodeRule codeRule);
+	void addCodeRule(CodeRuleDto codeRuleDto);
 }

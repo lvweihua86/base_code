@@ -15,14 +15,14 @@ import java.io.Serializable;
  * @version 1.0
  * @since JDK 1.8
  */
-public class CodeRuleBean extends BaseBean implements Serializable {
+public class CodeRuleInfoBean implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * 规则级别
 	 * <li>1,平台</li>
 	 * <li>2,集团</li>
 	 */
-	private Integer ruleLevel;
+	private Integer level;
 	/**
 	 * 集团ID（平台为1）
 	 */
@@ -85,15 +85,15 @@ public class CodeRuleBean extends BaseBean implements Serializable {
 	 */
 	private Integer totalLenght;
 
-	public CodeRuleBean() {
+	public CodeRuleInfoBean() {
 	}
 
-	public Integer getRuleLevel() {
-		return ruleLevel;
+	public Integer getLevel() {
+		return level;
 	}
 
-	public void setRuleLevel(Integer ruleLevel) {
-		this.ruleLevel = ruleLevel;
+	public void setLevel(Integer level) {
+		this.level = level;
 	}
 
 	public Integer getGroupId() {
@@ -196,7 +196,7 @@ public class CodeRuleBean extends BaseBean implements Serializable {
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("CodeRuleBean{");
 		sb.append(super.toString());
-		sb.append(", ruleLevel=").append(ruleLevel);
+		sb.append(", level=").append(level);
 		sb.append(", groupId=").append(groupId);
 		sb.append(", bizCode='").append(bizCode).append('\'');
 		sb.append(", ruleCode='").append(ruleCode).append('\'');

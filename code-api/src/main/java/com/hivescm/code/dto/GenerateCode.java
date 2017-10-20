@@ -17,11 +17,11 @@ import java.util.Map;
 public class GenerateCode implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/**
-	 * 集团ID（选填）（若组织无对应的编码规则，集团ID为空，默认取平台级别的编码规则）
+	 * 集团ID（选填）（平台为1）
 	 */
 	private Integer groupId;
 	/**
-	 * 组织ID（选填）（为空，默认取平台级别的编码规则）
+	 * 组织ID（选填）
 	 */
 	private Integer orgId;
 	/**

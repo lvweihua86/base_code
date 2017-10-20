@@ -1,8 +1,8 @@
-package com.hivescm.code.bean;
+package com.hivescm.code.dto;
 
 /**
  * <b>Description:</b><br>
- * 业务实体域数据实体 <br><br>
+ * 业务类型元数据简要 DTO <br><br>
  * <p>
  * <b>Note</b><br>
  * <b>ProjectName:</b> base-code
@@ -13,12 +13,8 @@ package com.hivescm.code.bean;
  * @version 1.0
  * @since JDK 1.8
  */
-public class BizTypeMetadataBean extends BaseBean {
+public class BizTypeMetadataInfoDto {
 	private static final long serialVersionUID = 1L;
-	/**
-	 * 类型ID
-	 */
-	private Integer typeId;
 	/**
 	 * 域名，用于传递
 	 */
@@ -28,15 +24,7 @@ public class BizTypeMetadataBean extends BaseBean {
 	 */
 	private String metadataShow;
 
-	public BizTypeMetadataBean() {
-	}
-
-	public Integer getTypeId() {
-		return typeId;
-	}
-
-	public void setTypeId(Integer typeId) {
-		this.typeId = typeId;
+	public BizTypeMetadataInfoDto() {
 	}
 
 	public String getMetadataName() {
@@ -57,10 +45,8 @@ public class BizTypeMetadataBean extends BaseBean {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("BizTypeMetadataDto{");
-		sb.append(super.toString());
-		sb.append(", typeId=").append(typeId);
-		sb.append(", metadataName='").append(metadataName).append('\'');
+		final StringBuilder sb = new StringBuilder("BizTypeMetadataInfoDto{");
+		sb.append("metadataName='").append(metadataName).append('\'');
 		sb.append(", metadataShow='").append(metadataShow).append('\'');
 		sb.append('}');
 		return sb.toString();

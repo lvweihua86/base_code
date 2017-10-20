@@ -3,7 +3,7 @@ package com.hivescm.code.controller;
 import com.hivescm.cache.client.JedisClient;
 import com.hivescm.code.common.Constants;
 import com.hivescm.code.controller.doc.ICodeRuleDoc;
-import com.hivescm.code.dto.CodeRule;
+import com.hivescm.code.dto.CodeRuleDto;
 import com.hivescm.code.exception.CodeErrorCode;
 import com.hivescm.code.exception.CodeException;
 import com.hivescm.code.service.CodeRuleService;
@@ -13,11 +13,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+
 /**
  * <b>Description:</b><br>
  * 编码规则控制器 <br><br>
@@ -45,8 +44,7 @@ public class CodeRuleController implements ICodeRuleDoc {
 	private JedisClient jedisClient;
 
 	@Override
-	@RequestMapping(value = "/addCodeRule", method = RequestMethod.POST)
-	public DataResult<Boolean> addCodeRule(@RequestBody CodeRule reqParam) {
+	public DataResult<Boolean> addCodeRule(@RequestBody CodeRuleDto reqParam) {
 		LOGGER.info("add code rule request,param:{}.", reqParam);
 		try {
 			addCodeRuleValidator.validate(reqParam);
