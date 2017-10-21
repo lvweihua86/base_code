@@ -3,6 +3,21 @@
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hivescm.code.mapper.RuleItemRelationMapper">
 
+    <!--查询组织对应的业务编码绑定的默认编码规则（锁）-->
+    <select id="queryDefaultBandingRuleLock" resultType="com.hivescm.code.bean.RuleItemRelationBean">
+        select
+        id as id,
+        rule_id as ruleId,
+        group_id as groupId,
+        org_id as orgId,
+        biz_code as bizCode,
+        defaulted as defaulted,
+        step_size as stepSize,
+        step_num as stepNum
+        from base_code_rule_org_relation
+        where org_id = #{orgId} and biz_code=#{bizCode} and defaulted = 1
+    </select>
+
     <!--依据规则ID删除规则与项关系表-->
     <delete id="deleteByRuleIds">
         delete from base_code_rule_item_relation where rule_id in

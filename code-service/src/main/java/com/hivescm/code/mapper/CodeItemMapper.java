@@ -22,7 +22,21 @@ import java.util.List;
 @DataSourceRouting(dataSource = "generated", isReadWriteSplitting = false, table = "base_code_item")
 public interface CodeItemMapper {
 
-	void batchAddCodeItem(@Param(value = "beans") List<CodeItemBean> beans ,@Param(value = "ruleId")Integer ruleId);
+	/**
+	 * 批量新增编码项
+	 *
+	 * @param beans  编码项数据实体
+	 * @param ruleId 规则ID
+	 */
+	void batchAddCodeItem(@Param(value = "beans") List<CodeItemBean> beans, @Param(value = "ruleId") Integer ruleId);
+
+	/**
+	 * 依据规则ID查询编码项
+	 *
+	 * @param ruleId 规则ID
+	 * @return 编码项集合
+	 */
+	List<CodeItemBean> queryItemsByRuleId(@Param(value = "ruleId") Integer ruleId);
 
 	/**
 	 * 依据规则ID删除编码规则项

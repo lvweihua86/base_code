@@ -117,8 +117,8 @@ values
 
 
 -- 5 编码规则与组织关系表
-DROP TABLE IF EXISTS `base_code_rule_item_relation`;
-CREATE TABLE `base_code_rule_item_relation` (
+DROP TABLE IF EXISTS `base_code_rule_org_relation`;
+CREATE TABLE `base_code_rule_org_relation` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT '自增主键',
   `rule_id` bigint(20) NOT NULL DEFAULT 0 COMMENT '规则ID',
   `group_id` int(11) NOT NULL DEFAULT 0 COMMENT '集团ID',

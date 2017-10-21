@@ -1,11 +1,12 @@
 package com.hivescm.code.service.impl;
 
+import com.hivescm.code.cache.CodeCacheDataInfo;
+import com.hivescm.code.cache.MysqlCodeCache;
+import com.hivescm.code.cache.RedisCodeCache;
 import com.hivescm.code.dto.CodeResult;
 import com.hivescm.code.dto.GenerateCode;
 import com.hivescm.code.mapper.CodeItemMapper;
 import com.hivescm.code.mapper.CodeRuleMapper;
-import com.hivescm.code.cache.CodeCacheData;
-import com.hivescm.code.cache.RedisCodeCache;
 import com.hivescm.code.service.CodeService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,18 +43,22 @@ public class CodeServiceImpl implements CodeService {
 	@Resource
 	private RedisCodeCache redisCodeCache;
 
-	@Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+	@Resource
+	private MysqlCodeCache mysqlCodeCache;
+
 	public CodeResult generateCode(final GenerateCode reqParam) {
 
-		final CodeCacheData cacheData = redisCodeCache.getCacheData(reqParam);
+		final CodeCacheDataInfo cacheData = redisCodeCache.getCacheData(reqParam);
 		if (cacheData.hasCaceh()) {
 			return generateCodeByCache(cacheData);
+		}else{
+			mysqlCodeCache.findAndInitCodeRule(reqParam);
 		}
 
 		return null;
 	}
 
-	private CodeResult generateCodeByCache(final CodeCacheData cacheData) {
+	private CodeResult generateCodeByCache(final CodeCacheDataInfo cacheData) {
 		CodeResult codeResult = new CodeResult();
 		return codeResult;
 	}

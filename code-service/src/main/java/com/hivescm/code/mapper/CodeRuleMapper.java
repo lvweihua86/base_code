@@ -24,11 +24,28 @@ public interface CodeRuleMapper {
 
 	/**
 	 * 新增编码规则
+	 *
 	 * @param bean 编码规则实体数据
 	 * @return 编码规则自增ID
 	 */
 	int addCodeRule(@Param(value = "bean") CodeRuleBean bean);
 
+	/**
+	 * 根据业务编码查询编码规则（锁）
+	 *
+	 * @param bizCode 业务编码
+	 * @return 编码规则
+	 */
+	CodeRuleBean queryDefaultedRuleByBizCodeLock(@Param(value = "bizCode") String bizCode,
+			@Param(value = "groupId") Integer groupId);
+
+	/**
+	 * 根据规则ID查询编码规则（锁）
+	 *
+	 * @param id 规则ID
+	 * @return 编码规则
+	 */
+	CodeRuleBean queryRuleByIdLock(@Param(value = "id") Integer id);
 
 	/**
 	 * 依据业务编码删除编码规则
@@ -39,9 +56,9 @@ public interface CodeRuleMapper {
 
 	/**
 	 * 根据业务编码查询编码规则ID集合
+	 *
 	 * @param bizCode 业务编码
 	 * @return
 	 */
 	List<Integer> queryRuleIdsByBizCode(@Param(value = "bizCode") String bizCode);
-
 }

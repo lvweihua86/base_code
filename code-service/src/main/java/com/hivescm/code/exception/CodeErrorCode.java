@@ -19,20 +19,18 @@ public class CodeErrorCode {
 	 * 编码系统错误
 	 */
 	public static final int CODE_SYSTEM_ERROR_CODE = 9999;
-
 	/**
 	 * 请求参数错误
  	 */
-	public static final int REQ_PARAM_ERROR_CODE = 1000;
-
+	public static final int REQ_PARAM_ERROR_CODE = 1001;
 	/**
 	 * 数据重复
 	 */
-	public static final int DATE_CONFLIC_ERROR_CODE = 1001;
-
-
-	// 编码规则不存在
-	public static final int CODE_RULE_NOT_EXIST_ERROR_CODE = 2001;
+	public static final int DATE_CONFLIC_ERROR_CODE = 2001;
+	/**
+	 * 数据不存在
+	 */
+	public static final int DATE_NOT_EXIST_ERROR_CODE = 2002;
 	// 流水号生成错误
 	public static final int GENERATE_FLOW_CODE_ERROR_CODE = 2002;
 	// 无法获取流水号

@@ -3,16 +3,17 @@ package com.hivescm.code.service.impl;
 import com.hivescm.cache.client.JedisClient;
 import com.hivescm.code.bean.CodeItemBean;
 import com.hivescm.code.bean.CodeRuleBean;
+import com.hivescm.code.cache.RedisCodeCache;
 import com.hivescm.code.common.Constants;
 import com.hivescm.code.dto.CodeItemDto;
 import com.hivescm.code.dto.CodeResult;
 import com.hivescm.code.dto.CodeRuleDto;
 import com.hivescm.code.dto.GenerateCode;
+import com.hivescm.code.enums.CacheLevelEnum;
 import com.hivescm.code.exception.CodeErrorCode;
 import com.hivescm.code.exception.CodeException;
 import com.hivescm.code.mapper.CodeItemMapper;
 import com.hivescm.code.mapper.CodeRuleMapper;
-import com.hivescm.code.cache.RedisCodeCache;
 import com.hivescm.code.service.CodeRuleService;
 import com.hivescm.code.service.CodeService;
 import org.slf4j.Logger;
@@ -72,7 +73,7 @@ public class CodeRuleServiceImpl implements CodeRuleService {
 		codeItemMapper.batchAddCodeItem(codeItems, ruleId);
 
 		// 初始化Redis缓存
-		redisCodeCache.initCache(codeRuleBean, codeItems, null);
+		redisCodeCache.initCache(codeRuleBean, codeItems, null, CacheLevelEnum.NEW);
 	}
 
 	/**
@@ -89,19 +90,27 @@ public class CodeRuleServiceImpl implements CodeRuleService {
 		codeRuleBean.setBreakCode(0);
 		codeRuleBean.setCover(1);
 		codeRuleBean.setTimeFormat("yyyyMMdd");
+		codeRuleBean.setRuleCode(getRuleCode());
+		return codeRuleBean;
+	}
 
+	/**
+	 * 获取规则编码
+	 *
+	 * @return 规则编码
+	 */
+	private String getRuleCode() {
 		GenerateCode generateCode = new GenerateCode();
 		generateCode.setBizCode(Constants.CODE_RULE_CODE_BIZ_CODE);
-		generateCode.setGroupId(1);
+		generateCode.setGroupId(1);// 取平台级
+
 		try {
 			final CodeResult codeResult = codeService.generateCode(generateCode);
-			final String code = codeResult.getCode();
-			codeRuleBean.setRuleCode(code);
+			return codeResult.getCode();
 		} catch (Exception ex) {
 			LOGGER.error("generate rule code failed.", ex);
 			throw new CodeException(CodeErrorCode.CODE_SYSTEM_ERROR_CODE, "编码规则未初始化");
 		}
-		return codeRuleBean;
 	}
 
 	/**

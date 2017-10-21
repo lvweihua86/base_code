@@ -1,5 +1,6 @@
 package com.hivescm.code.mapper;
 
+import com.hivescm.code.bean.RuleItemRelationBean;
 import com.mogujie.trade.db.DataSourceRouting;
 import org.apache.ibatis.annotations.Param;
 
@@ -20,6 +21,17 @@ import java.util.List;
  */
 @DataSourceRouting(dataSource = "generated", isReadWriteSplitting = false, table = "base_code_rule_item_relation")
 public interface RuleItemRelationMapper {
+
+	/**
+	 * 查询组织对应的业务编码绑定的默认编码规则（锁）
+	 *
+	 * @param orgId   业务单元ID
+	 * @param bizCode 业务编码
+	 * @return 绑定关系
+	 */
+	RuleItemRelationBean queryDefaultBandingRuleLock(@Param(value = "orgId") Integer orgId,
+			@Param(value = "bizCode") String bizCode);
+
 	/**
 	 * 依据规则ID删除规则与项关系表
 	 *

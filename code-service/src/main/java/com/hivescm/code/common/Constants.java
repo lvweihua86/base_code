@@ -28,16 +28,11 @@ public class Constants {
 	public static final String CODE_RULE_CODE_BIZ_CODE = "BASE_CODE_RULE_CODE";
 
 	/**
-	 * 编码规则 Redis 缓存 Key prefix
-	 * 完整模板 BASE:CODE:TEMPLATE:业务编码
-	 */
-	public static final String CODE_TEMPLATE_REDIS_PREFIX = "BASE:CODE:TEMPLATE:";
-
-	/**
-	 * 平台级 编码规则 Redis 缓存 Key prefix
+	 * 平台级 编码模板 Redis 缓存 Key prefix
 	 * 完整模板 PREFIX:业务编码
 	 */
 	public static final String PLATFORM_CODE_TEMPLATE_REDIS_PREFIX = "BASE:CODE:PLATFORM:TEMPLATE:";
+
 	/**
 	 * 平台级 编码流水号 Redis 缓存 Key prefix
 	 * 完整模板 BASE:CODE:TEMPLATE:业务编码
@@ -51,15 +46,39 @@ public class Constants {
 	public static final String PLATFORM_CODE_MAX_SERIAL_NUM_REDIS_PREFIX = "BASE:CODE:PLATFORM:MAX_SERIAL_NUM:";
 
 	/**
-	 * 编码流水号 Redis 缓存 Key prefix
-	 * 完整模板 BASE:CODE:TEMPLATE:业务编码
+	 * 集团级 编码模板 Redis 缓存 Key prefix
+	 * 完整模板 PREFIX:集团ID:业务编码
 	 */
-	public static final String CODE_SERIAL_NUM_REDIS_PREFIX = "BASE:CODE:SERIAL_NUM:";
+	public static final String GROUP_CODE_TEMPLATE_REDIS_PREFIX = "BASE:CODE:GROUP:TEMPLATE:";
 
 	/**
-	 * 编码最大流水号 Redis 缓存 Key prefix
-	 * 完整模板 BASE:CODE:TEMPLATE:业务编码
+	 * 集团级 编码流水号 Redis 缓存 Key prefix
+	 * 完整模板 BASE:CODE:TEMPLATE:集团ID:业务编码
 	 */
-	public static final String CODE_MAX_SERIAL_NUM_REDIS_PREFIX = "BASE:CODE:MAX_SERIAL_NUM:";
+	public static final String GROUP_CODE_SERIAL_NUM_REDIS_PREFIX = "BASE:CODE:GROUP:SERIAL_NUM:";
+
+	/**
+	 * 集团级 编码最大流水号 Redis 缓存 Key prefix
+	 * 完整模板 BASE:CODE:TEMPLATE:集团ID:业务编码
+	 */
+	public static final String GROUP_CODE_MAX_SERIAL_NUM_REDIS_PREFIX = "BASE:CODE:GROUP:MAX_SERIAL_NUM:";
+
+	/**
+	 * 业务单元级 编码模板 Redis 缓存 Key prefix
+	 * 完整模板 PREFIX:BU_ID:业务编码
+	 */
+	public static final String BIZ_UNIT_CODE_TEMPLATE_REDIS_PREFIX = "BASE:CODE:BIZ_UNIT:TEMPLATE:";
+
+	/**
+	 * 业务单元级 编码流水号 Redis 缓存 Key prefix
+	 * 完整模板 BASE:CODE:TEMPLATE:BU_ID:业务编码
+	 */
+	public static final String BIZ_UNIT_CODE_SERIAL_NUM_REDIS_PREFIX = "BASE:CODE:BIZ_UNIT:SERIAL_NUM:";
+
+	/**
+	 * 业务单元级 编码最大流水号 Redis 缓存 Key prefix
+	 * 完整模板 BASE:CODE:TEMPLATE:BU_ID:业务编码
+	 */
+	public static final String BIZ_UNIT_CODE_MAX_SERIAL_NUM_REDIS_PREFIX = "BASE:CODE:BIZ_UNIT:MAX_SERIAL_NUM:";
 
 }

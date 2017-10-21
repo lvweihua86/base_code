@@ -20,6 +20,7 @@
         create_time
     </sql>
 
+    <!--新增编码规则-->
     <insert id="addCodeRule" parameterType="com.hivescm.code.bean.CodeRuleBean" useGeneratedKeys="true" keyProperty="bean.id">
         INSERT INTO base_code_rule
         (
@@ -52,6 +53,49 @@
         </foreach>
     </delete>
 
+    <!--根据业务编码查询编码规则（锁）-->
+    <select id="queryDefaultedRuleByBizCodeLock" resultType="com.hivescm.code.bean.CodeRuleBean">
+        select
+        id,
+        rule_level as ruleLevel,
+        group_id as groupId,
+        biz_code as bizCode,
+        rule_code as ruleCode,
+        rule_name as ruleName,
+        code_way as codeWay,
+        break_code as breakCode,
+        zero_reason as zeroReason,
+        is_defaulte as defaulted,
+        is_cover as cover,
+        time_format as timeFormat,
+        total_lenght as totalLenght
+        from base_code_rule
+        where biz_code = #{bizCode} and group_id=#{groupId} and is_defaulte = 1
+        for update
+    </select>
+
+    <!--根据规则ID查询编码规则（锁）-->
+    <select id="queryRuleByIdLock" parameterType="integer" resultType="com.hivescm.code.bean.CodeRuleBean">
+        select
+        id,
+        rule_level as ruleLevel,
+        group_id as groupId,
+        biz_code as bizCode,
+        rule_code as ruleCode,
+        rule_name as ruleName,
+        code_way as codeWay,
+        break_code as breakCode,
+        zero_reason as zeroReason,
+        is_defaulte as defaulted,
+        is_cover as cover,
+        time_format as timeFormat,
+        total_lenght as totalLenght
+        from base_code_rule
+        where id = #{id}
+        for update
+    </select>
+
+    <!--根据业务编码查询编码规则ID集合-->
     <select id="queryRuleIdsByBizCode" parameterType="string" resultType="integer">
         select id from base_code_rule where biz_code = #{bizCode}
     </select>

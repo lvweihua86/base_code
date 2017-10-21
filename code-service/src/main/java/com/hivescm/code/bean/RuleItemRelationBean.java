@@ -21,7 +21,7 @@ public class RuleItemRelationBean implements Serializable {
 	/**
 	 * 规则ID
 	 */
-	private Long ruleId;
+	private Integer ruleId;
 	/**
 	 * 集团ID（全局为1）
 	 */
@@ -52,11 +52,11 @@ public class RuleItemRelationBean implements Serializable {
 	public RuleItemRelationBean() {
 	}
 
-	public Long getRuleId() {
+	public Integer getRuleId() {
 		return ruleId;
 	}
 
-	public void setRuleId(Long ruleId) {
+	public void setRuleId(Integer ruleId) {
 		this.ruleId = ruleId;
 	}
 

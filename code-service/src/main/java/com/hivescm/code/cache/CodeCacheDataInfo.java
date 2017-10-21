@@ -2,7 +2,7 @@ package com.hivescm.code.cache;
 
 /**
  * <b>Description:</b><br>
- * Redis 缓存实体 <br><br>
+ * Redis 缓存数据信息 <br><br>
  * <p>
  * <b>Note</b><br>
  * <b>ProjectName:</b> base-code
@@ -13,7 +13,7 @@ package com.hivescm.code.cache;
  * @version 1.0
  * @since JDK 1.8
  */
-public class CodeCacheData {
+public class CodeCacheDataInfo {
 	/**
 	 * 是否有缓存
 	 */
@@ -25,6 +25,11 @@ public class CodeCacheData {
 	private String codTemplate;
 
 	/**
+	 * 规则缓存
+	 */
+	private TemplateCacheData templateData;
+
+	/**
 	 * 流水号缓存Key
 	 */
 	private String serialNumKey;
@@ -34,7 +39,7 @@ public class CodeCacheData {
 	 */
 	private String maxSerialNumKey;
 
-	public CodeCacheData() {
+	public CodeCacheDataInfo() {
 	}
 
 	public boolean hasCaceh() {
@@ -51,6 +56,14 @@ public class CodeCacheData {
 
 	public void setCodTemplate(String codTemplate) {
 		this.codTemplate = codTemplate;
+	}
+
+	public TemplateCacheData getTemplateData() {
+		return templateData;
+	}
+
+	public void setTemplateData(TemplateCacheData templateData) {
+		this.templateData = templateData;
 	}
 
 	public String getSerialNumKey() {
@@ -71,9 +84,10 @@ public class CodeCacheData {
 
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("CodeCacheData{");
+		final StringBuilder sb = new StringBuilder("CodeCacheDataInfo{");
 		sb.append("hasCaceh=").append(hasCaceh);
 		sb.append(", codTemplate='").append(codTemplate).append('\'');
+		sb.append(", templateData='").append(templateData).append('\'');
 		sb.append(", serialNumKey='").append(serialNumKey).append('\'');
 		sb.append(", maxSerialNumKey='").append(maxSerialNumKey).append('\'');
 		sb.append('}');
