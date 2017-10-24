@@ -1,5 +1,10 @@
 package com.hivescm.code.utils;
 
+import com.hivescm.code.enums.DateFormateEnum;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+
 /**
  * <b>Description:</b><br>
  * 编码通用工具类 <br><br>
@@ -14,4 +19,5 @@ package com.hivescm.code.utils;
  * @since JDK 1.8
  */
 public class CodeUtil {
+
 }

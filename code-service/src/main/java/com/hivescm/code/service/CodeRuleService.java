@@ -1,5 +1,6 @@
 package com.hivescm.code.service;
 
+import com.hivescm.code.dto.AllocateCodeRuleDto;
 import com.hivescm.code.dto.CodeRuleDto;
 /**
  * <b>Description:</b><br>
@@ -23,4 +24,6 @@ public interface CodeRuleService {
 	 * @return
 	 */
 	void addCodeRule(CodeRuleDto codeRuleDto);
+
+	void allocateCodeRule(AllocateCodeRuleDto allocateCodeRuleDto);
 }

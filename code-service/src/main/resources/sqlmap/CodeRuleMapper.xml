@@ -4,7 +4,6 @@
 <mapper namespace="com.hivescm.code.mapper.CodeRuleMapper">
     <sql id="base_insert_list">
         id,
-        rule_level,
         group_id,
         biz_code,
         rule_code,
@@ -12,7 +11,7 @@
         code_way,
         break_code,
         zero_reason,
-        is_defaulte,
+        is_default,
         is_cover,
         time_format,
         total_lenght,
@@ -28,7 +27,6 @@
         )VALUES
         (
         #{bean.id},
-        #{bean.ruleLevel},
         #{bean.groupId},
         #{bean.bizCode},
         #{bean.ruleCode},
@@ -41,9 +39,18 @@
         #{bean.timeFormat},
         #{bean.totalLenght},
         #{bean.createUser},
-        #{bean.create_time}
+        #{bean.createTime}
         )
     </insert>
+
+    <!-- 更新其它为非默认状态 -->
+    <update id="updateOtherNoDefault">
+        update base_code_rule set is_default = 0 where  group_id=#{groupId} and biz_code=#{bizCode}
+    </update>
+
+    <select id="queryConflicRuleName" resultType="com.hivescm.code.bean.CodeRuleInfoBean">
+        select id from base_code_rule where group_id in(1, #{groupId}) and rule_name=#{ruleName} limit 1
+    </select>
 
     <!--依据业务编码删除编码规则-->
     <delete id="deleteByIds">
@@ -57,7 +64,6 @@
     <select id="queryDefaultedRuleByBizCodeLock" resultType="com.hivescm.code.bean.CodeRuleBean">
         select
         id,
-        rule_level as ruleLevel,
         group_id as groupId,
         biz_code as bizCode,
         rule_code as ruleCode,
@@ -65,12 +71,12 @@
         code_way as codeWay,
         break_code as breakCode,
         zero_reason as zeroReason,
-        is_defaulte as defaulted,
+        is_default as defaulted,
         is_cover as cover,
         time_format as timeFormat,
         total_lenght as totalLenght
         from base_code_rule
-        where biz_code = #{bizCode} and group_id=#{groupId} and is_defaulte = 1
+        where biz_code = #{bizCode} and group_id=#{groupId} and is_default = 1
         for update
     </select>
 
@@ -78,7 +84,6 @@
     <select id="queryRuleByIdLock" parameterType="integer" resultType="com.hivescm.code.bean.CodeRuleBean">
         select
         id,
-        rule_level as ruleLevel,
         group_id as groupId,
         biz_code as bizCode,
         rule_code as ruleCode,
@@ -86,7 +91,7 @@
         code_way as codeWay,
         break_code as breakCode,
         zero_reason as zeroReason,
-        is_defaulte as defaulted,
+        is_default as defaulted,
         is_cover as cover,
         time_format as timeFormat,
         total_lenght as totalLenght

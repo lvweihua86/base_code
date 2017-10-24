@@ -81,4 +81,18 @@ public class Constants {
 	 */
 	public static final String BIZ_UNIT_CODE_MAX_SERIAL_NUM_REDIS_PREFIX = "BASE:CODE:BIZ_UNIT:MAX_SERIAL_NUM:";
 
+	/**
+	 * Redis 缓存数据实际大小
+	 */
+	public static final int CACHE_SERIAL_NUM_DEFAULT_STEP_SIZE = 1000;
+
+	/**
+	 * Redis 缓存数据步数
+	 */
+	public static final int CACHE_SERIAL_NUM_DEFAULT_STEP_NUM = 1;
+
+	/**
+	 * Redis 缓存数据阈值
+	 */
+	public static final double CACHE_SERIAL_NUM_THRESHOLD_VALUE = 0.9;
 }

@@ -26,9 +26,8 @@ public interface CodeItemMapper {
 	 * 批量新增编码项
 	 *
 	 * @param beans  编码项数据实体
-	 * @param ruleId 规则ID
 	 */
-	void batchAddCodeItem(@Param(value = "beans") List<CodeItemBean> beans, @Param(value = "ruleId") Integer ruleId);
+	void batchAddCodeItem(@Param(value = "beans") List<CodeItemBean> beans);
 
 	/**
 	 * 依据规则ID查询编码项

@@ -1,5 +1,8 @@
 package com.hivescm.code.bean;
 
+import com.hivescm.code.exception.CodeErrorCode;
+import com.hivescm.code.exception.CodeException;
+
 import java.io.Serializable;
 
 /**
@@ -15,17 +18,17 @@ import java.io.Serializable;
  * @version 1.0
  * @since JDK 1.8
  */
-public class CodeItemBean extends BaseBean implements Serializable {
+public class CodeItemBean extends BaseBean implements Serializable, Comparable {
 	private static final long serialVersionUID = 1L;
 
 	/**
 	 * 编码规则ID
 	 */
-	private Long ruleId;
+	private Integer ruleId;
 	/**
 	 * 顺序（5段）
 	 */
-	private Integer orderNum;
+	private int orderNum;
 	/**
 	 * 项类型
 	 * 1常量;
@@ -37,7 +40,7 @@ public class CodeItemBean extends BaseBean implements Serializable {
 	/**
 	 * 项值
 	 */
-	private String itemValue;
+	private String itemValue = "";
 	/**
 	 * 项长
 	 */
@@ -47,7 +50,7 @@ public class CodeItemBean extends BaseBean implements Serializable {
 	 * 0 否
 	 * 1 是
 	 */
-	private Integer serial;
+	private Integer serial = 0;
 	/**
 	 * 流水依据
 	 * 0:不流水;
@@ -56,35 +59,33 @@ public class CodeItemBean extends BaseBean implements Serializable {
 	 * 3:按年流水;
 	 * 4:按字符串流水;
 	 */
-	private Integer serialType;
+	private Integer serialType = 0;
 	/**
 	 * 补位方式
-	 * 1左补位；
-	 * 2右补位;
-	 * 3不补位。
+	 * {@link com.hivescm.code.enums.CoverWayEnum}
 	 */
-	private Integer coverWay;
+	private Integer coverWay = 3;
 	/**
 	 * 补位字符
 	 */
-	private String coverChar;
+	private String coverChar = "0";
 
 	public CodeItemBean() {
 	}
 
-	public Long getRuleId() {
+	public Integer getRuleId() {
 		return ruleId;
 	}
 
-	public void setRuleId(Long ruleId) {
+	public void setRuleId(Integer ruleId) {
 		this.ruleId = ruleId;
 	}
 
-	public Integer getOrderNum() {
+	public int getOrderNum() {
 		return orderNum;
 	}
 
-	public void setOrderNum(Integer orderNum) {
+	public void setOrderNum(int orderNum) {
 		this.orderNum = orderNum;
 	}
 
@@ -158,5 +159,14 @@ public class CodeItemBean extends BaseBean implements Serializable {
 		sb.append(", coverChar='").append(coverChar).append('\'');
 		sb.append('}');
 		return sb.toString();
+	}
+
+	@Override
+	public int compareTo(Object codeItemObject) {
+		if (codeItemObject instanceof CodeItemBean) {
+			final CodeItemBean codeItem = (CodeItemBean) codeItemObject;
+			return this.getOrderNum() - codeItem.getOrderNum();
+		}
+		throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE,"非法操作");
 	}
 }

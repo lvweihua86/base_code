@@ -24,7 +24,7 @@ public class CodeResult implements Serializable{
 	/**
 	 * 规则ID
 	 */
-	private Long ruleId;
+	private Integer ruleId;
 
 	public CodeResult() {
 	}
@@ -37,11 +37,11 @@ public class CodeResult implements Serializable{
 		this.code = code;
 	}
 
-	public Long getRuleId() {
+	public Integer getRuleId() {
 		return ruleId;
 	}
 
-	public void setRuleId(Long ruleId) {
+	public void setRuleId(Integer ruleId) {
 		this.ruleId = ruleId;
 	}
 

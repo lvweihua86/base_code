@@ -15,7 +15,7 @@
         <foreach collection="beans" item="bean" separator=",">
             (
             #{bean.id},
-            #{ruleId},
+            #{bean.ruleId},
             #{bean.orderNum},
             #{bean.itemType},
             #{bean.itemValue},

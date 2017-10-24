@@ -44,13 +44,4 @@ public interface ICodeDoc {
 	@ApiOperation(value = "回收编码", httpMethod = "POST")
 	@RequestMapping(value = "/recycleCode", method = RequestMethod.POST)
 	DataResult<Boolean> recycleCode(@RequestBody RecycleCode reqParam);
-
-	/**
-	 * 初始化 Redis 缓存
-	 *
-	 * @return <code>true</code>回收成功
-	 */
-	@ApiOperation(value = "初始化", httpMethod = "GET")
-	@RequestMapping(value = "/initCodeTemplate", method = RequestMethod.GET)
-	DataResult<Boolean> initCodeTemplate();
 }

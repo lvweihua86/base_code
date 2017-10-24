@@ -6,12 +6,6 @@ import java.util.List;
 public class CodeRuleDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/**
-	 * 规则级别（必填）
-	 * <li>1,平台</li>
-	 * <li>2,集团</li>
-	 */
-	private Integer ruleLevel;
-	/**
 	 * 集团ID（平台为1）（必填）
 	 */
 	private Integer groupId;
@@ -28,13 +22,13 @@ public class CodeRuleDto implements Serializable {
 	 * <li>1,保存前编码</li>
 	 * <li>2,保存后编码</li>
 	 */
-	//private Integer codeWay = 1;
+	private Integer codeWay = 2;
 	/**
 	 * 断码补码（选填）
 	 * <li>0,否</li>
 	 * <li>1,是</li>
 	 */
-	//private Integer breakCode = 0;
+	private Integer breakCode = 0;
 	/**
 	 * 归零依据（选填）
 	 * <li>1,平台</li>
@@ -53,25 +47,21 @@ public class CodeRuleDto implements Serializable {
 	 * <li>0,否</li>
 	 * <li>1,是</li>
 	 */
-	//private Integer cover = 1;
+	private Integer cover = 1;
 	/**
 	 * 时间格式（选填）
 	 */
-	//private String timeFormat = "yyyyMMdd";
+	private String timeFormat = "yyyyMMdd";
+	/**
+	 * 总长度
+	 */
+	private int totalLenght;
 	/**
 	 * 编码项(1~5项)
 	 */
 	private List<CodeItemDto> codeItems;
 
 	public CodeRuleDto() {
-	}
-
-	public Integer getRuleLevel() {
-		return ruleLevel;
-	}
-
-	public void setRuleLevel(Integer ruleLevel) {
-		this.ruleLevel = ruleLevel;
 	}
 
 	public Integer getGroupId() {
@@ -98,21 +88,17 @@ public class CodeRuleDto implements Serializable {
 		this.ruleName = ruleName;
 	}
 
-	/*public Integer getCodeWay() {
+	public Integer getCodeWay() {
 		return codeWay;
-	}
-
-	public void setCodeWay(Integer codeWay) {
-		this.codeWay = codeWay;
 	}
 
 	public Integer getBreakCode() {
 		return breakCode;
 	}
 
-	public void setBreakCode(Integer breakCode) {
-		this.breakCode = breakCode;
-	}*/
+	public Integer getCover() {
+		return cover;
+	}
 
 	public Integer getZeroReason() {
 		return zeroReason;
@@ -130,21 +116,17 @@ public class CodeRuleDto implements Serializable {
 		this.defaulted = defaulted;
 	}
 
-	/*public Integer getCover() {
-		return cover;
-	}
-
-	public void setCover(Integer cover) {
-		this.cover = cover;
-	}
-
 	public String getTimeFormat() {
 		return timeFormat;
 	}
 
-	public void setTimeFormat(String timeFormat) {
-		this.timeFormat = timeFormat;
-	}*/
+	public int getTotalLenght() {
+		return totalLenght;
+	}
+
+	public void setTotalLenght(int totalLenght) {
+		this.totalLenght = totalLenght;
+	}
 
 	public List<CodeItemDto> getCodeItems() {
 		return codeItems;
@@ -157,16 +139,16 @@ public class CodeRuleDto implements Serializable {
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("CodeRuleDto{");
-		sb.append("ruleLevel=").append(ruleLevel);
 		sb.append(", groupId=").append(groupId);
 		sb.append(", bizCode='").append(bizCode).append('\'');
 		sb.append(", ruleName='").append(ruleName).append('\'');
-		//sb.append(", codeWay=").append(codeWay);
-		//sb.append(", breakCode=").append(breakCode);
+		sb.append(", codeWay=").append(codeWay);
+		sb.append(", breakCode=").append(breakCode);
 		sb.append(", zeroReason=").append(zeroReason);
 		sb.append(", defaulted=").append(defaulted);
-		//sb.append(", cover=").append(cover);
-		//sb.append(", timeFormat='").append(timeFormat).append('\'');
+		sb.append(", cover=").append(cover);
+		sb.append(", timeFormat='").append(timeFormat).append('\'');
+		sb.append(", totalLenght='").append(totalLenght).append('\'');
 		sb.append(", codeItems=").append(codeItems);
 		sb.append('}');
 		return sb.toString();

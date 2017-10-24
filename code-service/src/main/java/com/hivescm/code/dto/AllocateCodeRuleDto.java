@@ -1,67 +1,56 @@
-package com.hivescm.code.bean;
+package com.hivescm.code.dto;
 
 import java.io.Serializable;
 
 /**
  * <b>Description:</b><br>
- * 规则与组织关系数据实体 <br><br>
+ * 分配编码规则请求参数 <br><br>
  * <p>
  * <b>Note</b><br>
  * <b>ProjectName:</b> base-code
- * <br><b>PackageName:</b> com.hivescm.code.bean
- * <br><b>Date:</b> 2017/10/19 17:17
+ * <br><b>PackageName:</b> com.hivescm.code.dto
+ * <br><b>Date:</b> 2017/10/23 16:45
  *
  * @author DongChunfu
  * @version 1.0
  * @since JDK 1.8
  */
-public class RuleItemRelationBean extends BaseBean implements Serializable {
+public class AllocateCodeRuleDto implements Serializable{
 	private static final long serialVersionUID = 1L;
-
+	/**
+	 * 用户ID
+	 */
+	private Integer userId;
 	/**
 	 * 规则ID
 	 */
 	private Integer ruleId;
 	/**
-	 * 集团ID（全局为1）
+	 * 集团ID
 	 */
 	private Integer groupId;
 	/**
-	 * 业务实体
+	 * 业务单元ID
 	 */
 	private Integer orgId;
 	/**
-	 * 业务实体编码
+	 * 业务编码
 	 */
 	private String bizCode;
 	/**
-	 * 默认
-	 * <li>0,否</li>
-	 * <li>1,是</li>
+	 * 是否默认
 	 */
 	private Integer defaulted;
-	/**
-	 * 缓存步长
-	 */
-	private Integer stepSize;
-	/**
-	 * 缓存次数
-	 */
-	private Integer stepNum;
 
-	public RuleItemRelationBean() {
+	public AllocateCodeRuleDto() {
 	}
 
-	public long nextCacheSerialNum() {
-		return stepNum * stepSize;
+	public Integer getUserId() {
+		return userId;
 	}
 
-	public long currentMaxSerialNum() {
-		return stepNum * stepSize;
-	}
-
-	public long nextMaxSerialNum() {
-		return (stepNum + 1) * stepSize;
+	public void setUserId(Integer userId) {
+		this.userId = userId;
 	}
 
 	public Integer getRuleId() {
@@ -104,33 +93,15 @@ public class RuleItemRelationBean extends BaseBean implements Serializable {
 		this.defaulted = defaulted;
 	}
 
-	public Integer getStepSize() {
-		return stepSize;
-	}
-
-	public void setStepSize(Integer stepSize) {
-		this.stepSize = stepSize;
-	}
-
-	public Integer getStepNum() {
-		return stepNum;
-	}
-
-	public void setStepNum(Integer stepNum) {
-		this.stepNum = stepNum;
-	}
-
 	@Override
 	public String toString() {
-		final StringBuilder sb = new StringBuilder("RuleItemRelationBean{");
-		sb.append(super.toString());
+		final StringBuilder sb = new StringBuilder("AllocateCodeRuleDto{");
+		sb.append("userId=").append(userId);
 		sb.append(", ruleId=").append(ruleId);
 		sb.append(", groupId=").append(groupId);
 		sb.append(", orgId=").append(orgId);
-		sb.append(", bizCode='").append(bizCode).append('\'');
+		sb.append(", bizCode=").append(bizCode);
 		sb.append(", defaulted=").append(defaulted);
-		sb.append(", stepSize=").append(stepSize);
-		sb.append(", stepNum=").append(stepNum);
 		sb.append('}');
 		return sb.toString();
 	}

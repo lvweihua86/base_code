@@ -33,7 +33,7 @@ public class GenerateCode implements Serializable {
 	 * 业务实体列表存储的 field_name 为必填，
 	 * 当取对应值时返回指定错误码，客户端自行处理；
 	 */
-	private Map<String, String> entityAttr = new HashMap<>(10, 1);
+	private Map<String, String> bizAttr = new HashMap<>(10, 1);
 	/**
 	 * 业务时间，时间类型的编码规则使用
 	 * 业务实体列表存储的 field_name 为必填，
@@ -68,12 +68,12 @@ public class GenerateCode implements Serializable {
 		this.bizCode = bizCode;
 	}
 
-	public Map<String, String> getEntityAttr() {
-		return entityAttr;
+	public Map<String, String> getBizAttr() {
+		return bizAttr;
 	}
 
-	public void setEntityAttr(Map<String, String> entityAttr) {
-		this.entityAttr = entityAttr;
+	public void setBizAttr(Map<String, String> bizAttr) {
+		this.bizAttr = bizAttr;
 	}
 
 	public Map<String, Date> getBizTime() {
@@ -90,7 +90,7 @@ public class GenerateCode implements Serializable {
 		sb.append("groupId=").append(groupId);
 		sb.append(", orgId=").append(orgId);
 		sb.append(", bizCode='").append(bizCode).append('\'');
-		sb.append(", entityAttr=").append(entityAttr);
+		sb.append(", bizAttr=").append(bizAttr);
 		sb.append(", bizTime=").append(bizTime);
 		sb.append('}');
 		return sb.toString();

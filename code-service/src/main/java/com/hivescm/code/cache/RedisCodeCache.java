@@ -6,14 +6,10 @@ import com.hivescm.code.bean.CodeItemBean;
 import com.hivescm.code.bean.CodeRuleBean;
 import com.hivescm.code.bean.RuleItemRelationBean;
 import com.hivescm.code.common.Constants;
-import com.hivescm.code.dto.GenerateCode;
 import com.hivescm.code.enums.BooleanEnum;
 import com.hivescm.code.enums.CacheLevelEnum;
-import com.hivescm.code.enums.LevelEnum;
 import com.hivescm.code.exception.CodeErrorCode;
 import com.hivescm.code.exception.CodeException;
-import com.hivescm.code.utils.NumberUtil;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,211 +43,200 @@ public class RedisCodeCache {
 	 *
 	 * @param codeRule  编码规则
 	 * @param codeItems 编码项集
-	 * @param relation  绑定关系（平台级可空）
+	 * @param relation  绑定关系
+	 * @param firstTime 是否第一次初始化
 	 */
-	public void initCache(final CodeRuleBean codeRule, final List<CodeItemBean> codeItems,
-			final RuleItemRelationBean relation, CacheLevelEnum cacheLeve) {
-
-		if (cacheLeve != CacheLevelEnum.NEW) {
-			if (relation == null) {
-				throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "关系及步长信息不得为空");
-			}
-		}
+	public CodeCacheDataInfo initCache(final CodeRuleBean codeRule, final List<CodeItemBean> codeItems,
+			final RuleItemRelationBean relation, CacheLevelEnum cacheLeve, Boolean firstTime) {
 
 		switch (cacheLeve) {
 		case NEW:
-			initNewRule(codeRule, codeItems);
-			return;
+			return initNewRule(codeRule, codeItems, relation);
 		case BIZ_UNIT:
-			initBizUnitRule(codeRule, codeItems, relation);
-			return;
+			return initBizUnitRule(codeRule, codeItems, relation, firstTime);
 		case GROUP:
-			initGroupRule(codeRule, codeItems, relation);
-			return;
+			return initGroupRule(codeRule, codeItems, relation, firstTime);
 		case PLATFORM:
-			initPlatformRule(codeRule, codeItems, relation);
-			return;
+			return initPlatformRule(codeRule, codeItems, relation, firstTime);
 		}
 		throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "缓存级别不存在");
 	}
 
 	/**
+	 * 删除业务单元级的缓存
+	 *
+	 * @param currentRelation
+	 */
+	public void deleteBizUnitCache(final RuleItemRelationBean currentRelation) {
+		final Integer orgId = currentRelation.getOrgId();
+		final String bizCode = currentRelation.getBizCode();
+
+		String redisTemplateKey = Constants.BIZ_UNIT_CODE_TEMPLATE_REDIS_PREFIX + orgId + ":" + bizCode;
+		String redisSerialNumKey = Constants.BIZ_UNIT_CODE_SERIAL_NUM_REDIS_PREFIX + orgId + ":" + bizCode;
+		String redisMaxSerialNumKey = Constants.BIZ_UNIT_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + orgId + ":" + bizCode;
+
+		jedisClient.delete(redisTemplateKey, redisSerialNumKey, redisMaxSerialNumKey);
+	}
+
+	/**
 	 * 新增编码规则初始化
 	 *
 	 * @param codeRule  编码规则
 	 * @param codeItems 编码项
 	 */
-	private void initNewRule(final CodeRuleBean codeRule, final List<CodeItemBean> codeItems) {
+	private CodeCacheDataInfo initNewRule(final CodeRuleBean codeRule, final List<CodeItemBean> codeItems,
+			final RuleItemRelationBean relation) {
 		final Integer defaulted = codeRule.getDefaulted();
 		if (BooleanEnum.TRUE.getTruth() != defaulted) {
-			return;
+			return null;
 		}
+		CodeCacheDataInfo codeCacheDataInfo = new CodeCacheDataInfo();
 		TemplateCacheData templateCacheData = new TemplateCacheData();
 		templateCacheData.setCodeRule(codeRule);
 		templateCacheData.setCodeItems(codeItems);
 		final String cacheData = GSON.toJson(templateCacheData);
+		codeCacheDataInfo.setCacheTemplate(cacheData);
 
-		final Integer ruleLevel = codeRule.getRuleLevel();
-		if (LevelEnum.PLATFORM.getLevel() == ruleLevel) {
-			String redisTemplateKey = Constants.PLATFORM_CODE_TEMPLATE_REDIS_PREFIX + codeRule.getBizCode();
-			String redisSerialNumKey = Constants.PLATFORM_CODE_SERIAL_NUM_REDIS_PREFIX + codeRule.getBizCode();
-			String redisMaxSerialNumKey = Constants.PLATFORM_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + codeRule.getBizCode();
-
-			jedisClient.set(redisTemplateKey, cacheData);
-			jedisClient.set(redisSerialNumKey, "1");
-			jedisClient.set(redisMaxSerialNumKey, "10000");
-		}
-
-		if (LevelEnum.GROUP.getLevel() == ruleLevel) {
-			String redisTemplateKey =
-					Constants.GROUP_CODE_TEMPLATE_REDIS_PREFIX + codeRule.getGroupId() + ":" + codeRule.getBizCode();
-			String redisSerialNumKey = Constants.GROUP_CODE_SERIAL_NUM_REDIS_PREFIX + codeRule.getBizCode();
-			String redisMaxSerialNumKey =
-					Constants.GROUP_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + codeRule.getGroupId() + ":" + codeRule.getBizCode();
-
-			jedisClient.set(redisTemplateKey, cacheData);
-			jedisClient.set(redisSerialNumKey, "1");
-			jedisClient.set(redisMaxSerialNumKey, "10000");
-		}
-	}
-
-	/**
-	 * 新增编码规则初始化
-	 *
-	 * @param codeRule  编码规则
-	 * @param codeItems 编码项
-	 */
-	private void initBizUnitRule(final CodeRuleBean codeRule, final List<CodeItemBean> codeItems,
-			final RuleItemRelationBean relation) {
-		TemplateCacheData templateCacheData = new TemplateCacheData();
-		templateCacheData.setCodeRule(codeRule);
-		templateCacheData.setCodeItems(codeItems);
-		final String cacheData = GSON.toJson(templateCacheData);
-
-		String redisTemplateKey =
-				Constants.BIZ_UNIT_CODE_TEMPLATE_REDIS_PREFIX + relation.getOrgId() + ":" + codeRule.getBizCode();
-		String redisSerialNumKey =
-				Constants.BIZ_UNIT_CODE_SERIAL_NUM_REDIS_PREFIX + relation.getOrgId() + ":" + codeRule.getBizCode();
-		String redisMaxSerialNumKey =
-				Constants.BIZ_UNIT_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + relation.getOrgId() + ":" + codeRule.getBizCode();
-
-		jedisClient.set(redisTemplateKey, cacheData);
-		jedisClient.set(redisSerialNumKey, relation.getStepNum() * relation.getStepNum() + "");
-		jedisClient.set(redisMaxSerialNumKey, (relation.getStepNum() + 1) * relation.getStepNum() + "");
-	}
-
-	/**
-	 * 新增编码规则初始化
-	 *
-	 * @param codeRule  编码规则
-	 * @param codeItems 编码项
-	 */
-	private void initGroupRule(final CodeRuleBean codeRule, final List<CodeItemBean> codeItems,
-			final RuleItemRelationBean relation) {
-		TemplateCacheData templateCacheData = new TemplateCacheData();
-		templateCacheData.setCodeRule(codeRule);
-		templateCacheData.setCodeItems(codeItems);
-		final String cacheData = GSON.toJson(templateCacheData);
 		final Integer groupId = codeRule.getGroupId();
+		String redisTemplateKey;
+		String redisSerialNumKey;
+		String redisMaxSerialNumKey;
+		final String bizCode = codeRule.getBizCode();
+		if (Constants.PLATFORM_GROUP_ID == groupId) {
+			redisTemplateKey = Constants.PLATFORM_CODE_TEMPLATE_REDIS_PREFIX + bizCode;
+			redisSerialNumKey = Constants.PLATFORM_CODE_SERIAL_NUM_REDIS_PREFIX + bizCode;
+			redisMaxSerialNumKey = Constants.PLATFORM_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + bizCode;
+		} else {
 
-		String redisTemplateKey =
-				Constants.GROUP_CODE_TEMPLATE_REDIS_PREFIX + groupId + ":" + codeRule.getBizCode();
-		String redisSerialNumKey =
-				Constants.GROUP_CODE_SERIAL_NUM_REDIS_PREFIX + groupId + ":" + codeRule.getBizCode();
-		String redisMaxSerialNumKey =
-				Constants.GROUP_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + groupId + ":" + codeRule.getBizCode();
+			redisTemplateKey = Constants.GROUP_CODE_TEMPLATE_REDIS_PREFIX + groupId + ":" + bizCode;
+			redisSerialNumKey = Constants.GROUP_CODE_SERIAL_NUM_REDIS_PREFIX + bizCode;
+			redisMaxSerialNumKey = Constants.GROUP_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + groupId + ":" + bizCode;
+		}
 
 		jedisClient.set(redisTemplateKey, cacheData);
-		jedisClient.set(redisSerialNumKey, relation.getStepNum() * relation.getStepNum() + "");
-		jedisClient.set(redisMaxSerialNumKey, (relation.getStepNum() + 1) * relation.getStepNum() + "");
+		jedisClient.set(redisSerialNumKey, 0 + "");
+		jedisClient.set(redisMaxSerialNumKey, relation.currentMaxSerialNum() + "");
+
+		codeCacheDataInfo.setGroupId(groupId);
+		codeCacheDataInfo.setOrgId(0);
+		codeCacheDataInfo.setBizCode(bizCode);
+		codeCacheDataInfo.setTemplateData(templateCacheData);
+		codeCacheDataInfo.setSerialNumKey(redisSerialNumKey);
+		codeCacheDataInfo.setMaxSerialNumKey(redisMaxSerialNumKey);
+		return codeCacheDataInfo;
 	}
 
 	/**
-	 * 新增编码规则初始化
+	 * 业务单元级编码规则初始化
 	 *
 	 * @param codeRule  编码规则
 	 * @param codeItems 编码项
+	 * @param firstTime 是否第一次初始化
 	 */
-	private void initPlatformRule(final CodeRuleBean codeRule, final List<CodeItemBean> codeItems,
-			final RuleItemRelationBean relation) {
+	private CodeCacheDataInfo initBizUnitRule(final CodeRuleBean codeRule, final List<CodeItemBean> codeItems,
+			final RuleItemRelationBean relation, Boolean firstTime) {
+
+		CodeCacheDataInfo codeCacheDataInfo = new CodeCacheDataInfo();
 		TemplateCacheData templateCacheData = new TemplateCacheData();
 		templateCacheData.setCodeRule(codeRule);
 		templateCacheData.setCodeItems(codeItems);
 		final String cacheData = GSON.toJson(templateCacheData);
-		final Integer groupId = codeRule.getGroupId();
+		codeCacheDataInfo.setCacheTemplate(cacheData);
 
-		String redisTemplateKey =
-				Constants.PLATFORM_CODE_TEMPLATE_REDIS_PREFIX + codeRule.getBizCode();
-		String redisSerialNumKey =
-				Constants.PLATFORM_CODE_SERIAL_NUM_REDIS_PREFIX + codeRule.getBizCode();
-		String redisMaxSerialNumKey =
-				Constants.PLATFORM_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + codeRule.getBizCode();
+		final Integer orgId = relation.getOrgId();
+		final String bizCode = codeRule.getBizCode();
+		String redisTemplateKey = Constants.BIZ_UNIT_CODE_TEMPLATE_REDIS_PREFIX + orgId + ":" + bizCode;
+		String redisSerialNumKey = Constants.BIZ_UNIT_CODE_SERIAL_NUM_REDIS_PREFIX + orgId + ":" + bizCode;
+		String redisMaxSerialNumKey = Constants.BIZ_UNIT_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + orgId + ":" + bizCode;
 
 		jedisClient.set(redisTemplateKey, cacheData);
-		jedisClient.set(redisSerialNumKey, relation.getStepNum() * relation.getStepNum() + "");
-		jedisClient.set(redisMaxSerialNumKey, (relation.getStepNum() + 1) * relation.getStepNum() + "");
+		long cacheSerialNum = firstTime ? 0 : relation.nextCacheSerialNum();
+		jedisClient.set(redisSerialNumKey, cacheSerialNum + "");
+		long cacheMaxSerialNum = firstTime ? relation.currentMaxSerialNum() : relation.nextMaxSerialNum();
+		jedisClient.set(redisMaxSerialNumKey, cacheMaxSerialNum + "");
+
+		codeCacheDataInfo.setGroupId(relation.getGroupId());
+		codeCacheDataInfo.setOrgId(orgId);
+		codeCacheDataInfo.setBizCode(bizCode);
+		codeCacheDataInfo.setTemplateData(templateCacheData);
+		codeCacheDataInfo.setSerialNumKey(redisSerialNumKey);
+		codeCacheDataInfo.setMaxSerialNumKey(redisMaxSerialNumKey);
+		return codeCacheDataInfo;
 	}
 
 	/**
-	 * 获取缓存数据
-	 */
-	public CodeCacheDataInfo getCacheData(final GenerateCode reqParam) {
-		CodeCacheDataInfo cacheBean = new CodeCacheDataInfo();
-
-		// 获取 Redis 编码模板缓存
-		final String bizCode = reqParam.getBizCode();
-		final Integer groupId = reqParam.getGroupId();
-		if (Constants.PLATFORM_GROUP_ID == groupId) {// 平台级编码
-			return getPlatFormCache(bizCode);
-		}
-
-		final Integer orgId = reqParam.getOrgId();
-		if (!NumberUtil.nullOrlessThanOrEqualToZero(orgId)) {
-			String redisTemplateCacheKey = Constants.BIZ_UNIT_CODE_TEMPLATE_REDIS_PREFIX + orgId + ":" + bizCode;
-			final String cacheTemplate = jedisClient.get(redisTemplateCacheKey);
-			LOGGER.debug("业务单元级缓存的编码规则模板：{}.", cacheTemplate);
-			if (!StringUtils.isEmpty(cacheTemplate)) {
-				cacheBean.setHasCaceh(true);
-				cacheBean.setCodTemplate(cacheTemplate);
-				cacheBean.setSerialNumKey(Constants.BIZ_UNIT_CODE_TEMPLATE_REDIS_PREFIX + orgId + ":" + bizCode);
-				cacheBean.setMaxSerialNumKey(Constants.BIZ_UNIT_CODE_TEMPLATE_REDIS_PREFIX + orgId + ":" + bizCode);
-				return cacheBean;
-			}
-		}
-
-		if (!NumberUtil.nullOrlessThanOrEqualToZero(groupId)) {
-			String redisTemplateCacheKey = Constants.GROUP_CODE_TEMPLATE_REDIS_PREFIX + groupId + ":" + bizCode;
-			final String cacheTemplate = jedisClient.get(redisTemplateCacheKey);
-			LOGGER.debug("业务单元级缓存的编码规则模板：{}.", cacheTemplate);
-			if (!StringUtils.isEmpty(cacheTemplate)) {
-				cacheBean.setHasCaceh(true);
-				cacheBean.setCodTemplate(cacheTemplate);
-				cacheBean.setSerialNumKey(Constants.GROUP_CODE_TEMPLATE_REDIS_PREFIX + groupId + ":" + bizCode);
-				cacheBean.setMaxSerialNumKey(Constants.GROUP_CODE_TEMPLATE_REDIS_PREFIX + groupId + ":" + bizCode);
-				return cacheBean;
-			}
-		}
-
-		return getPlatFormCache(bizCode);
-	}
-
-	/**
-	 * 获取平台级规则模板缓存
+	 * 集团级编码规则初始化
 	 *
-	 * @param bizCode 业务编码
-	 * @return 编码缓存信息
+	 * @param codeRule  编码规则
+	 * @param codeItems 编码项
+	 * @param firstTime 是否第一次初始化
 	 */
-	private CodeCacheDataInfo getPlatFormCache(String bizCode) {
-		CodeCacheDataInfo cacheBean = new CodeCacheDataInfo();
-		String redisTemplateCacheKey = Constants.PLATFORM_CODE_TEMPLATE_REDIS_PREFIX + bizCode;
-		final String cacheTemplate = jedisClient.get(redisTemplateCacheKey);
-		LOGGER.debug("平台级缓存的编码规则模板：{}.", cacheTemplate);
-		if (!StringUtils.isEmpty(cacheTemplate)) {
-			cacheBean.setHasCaceh(true);
-			cacheBean.setCodTemplate(cacheTemplate);
-			cacheBean.setSerialNumKey(Constants.PLATFORM_CODE_SERIAL_NUM_REDIS_PREFIX + bizCode);
-			cacheBean.setMaxSerialNumKey(Constants.PLATFORM_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + bizCode);
-		}
-		return cacheBean;
+	private CodeCacheDataInfo initGroupRule(final CodeRuleBean codeRule, final List<CodeItemBean> codeItems,
+			final RuleItemRelationBean relation, Boolean firstTime) {
+
+		CodeCacheDataInfo codeCacheDataInfo = new CodeCacheDataInfo();
+		TemplateCacheData templateCacheData = new TemplateCacheData();
+		templateCacheData.setCodeRule(codeRule);
+		templateCacheData.setCodeItems(codeItems);
+		final String cacheData = GSON.toJson(templateCacheData);
+		codeCacheDataInfo.setCacheTemplate(cacheData);
+
+		final Integer groupId = codeRule.getGroupId();
+		final String bizCode = codeRule.getBizCode();
+		String redisTemplateKey = Constants.GROUP_CODE_TEMPLATE_REDIS_PREFIX + groupId + ":" + bizCode;
+		String redisSerialNumKey = Constants.GROUP_CODE_SERIAL_NUM_REDIS_PREFIX + groupId + ":" + bizCode;
+		String redisMaxSerialNumKey = Constants.GROUP_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + groupId + ":" + bizCode;
+
+		jedisClient.set(redisTemplateKey, cacheData);
+		long cacheSerialNum = firstTime ? 0 : relation.nextCacheSerialNum();
+		jedisClient.set(redisSerialNumKey, cacheSerialNum + "");
+		long cacheMaxSerialNum = firstTime ? relation.currentMaxSerialNum() : relation.nextMaxSerialNum();
+		jedisClient.set(redisMaxSerialNumKey, cacheMaxSerialNum + "");
+
+		codeCacheDataInfo.setGroupId(groupId);
+		codeCacheDataInfo.setOrgId(0);
+		codeCacheDataInfo.setBizCode(bizCode);
+		codeCacheDataInfo.setTemplateData(templateCacheData);
+		codeCacheDataInfo.setSerialNumKey(redisSerialNumKey);
+		codeCacheDataInfo.setMaxSerialNumKey(redisMaxSerialNumKey);
+		return codeCacheDataInfo;
+	}
+
+	/**
+	 * 平台级编码规则初始化
+	 *
+	 * @param codeRule  编码规则
+	 * @param codeItems 编码项
+	 * @param firstTime 是否第一次初始化
+	 */
+	private CodeCacheDataInfo initPlatformRule(final CodeRuleBean codeRule, final List<CodeItemBean> codeItems,
+			final RuleItemRelationBean relation, Boolean firstTime) {
+
+		CodeCacheDataInfo codeCacheDataInfo = new CodeCacheDataInfo();
+		TemplateCacheData templateCacheData = new TemplateCacheData();
+		templateCacheData.setCodeRule(codeRule);
+		templateCacheData.setCodeItems(codeItems);
+		final String cacheData = GSON.toJson(templateCacheData);
+		codeCacheDataInfo.setCacheTemplate(cacheData);
+
+		final Integer groupId = codeRule.getGroupId();
+		final String bizCode = codeRule.getBizCode();
+		String redisTemplateKey = Constants.PLATFORM_CODE_TEMPLATE_REDIS_PREFIX + bizCode;
+		String redisSerialNumKey = Constants.PLATFORM_CODE_SERIAL_NUM_REDIS_PREFIX + bizCode;
+		String redisMaxSerialNumKey = Constants.PLATFORM_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + bizCode;
+
+		jedisClient.set(redisTemplateKey, cacheData);
+		long cacheSerialNum = firstTime ? 0 : relation.nextCacheSerialNum();
+		jedisClient.set(redisSerialNumKey, cacheSerialNum + "");
+		long cacheMaxSerialNum = firstTime ? relation.currentMaxSerialNum() : relation.nextMaxSerialNum();
+		jedisClient.set(redisMaxSerialNumKey, cacheMaxSerialNum + "");
+
+		codeCacheDataInfo.setGroupId(groupId);
+		codeCacheDataInfo.setOrgId(0);
+		codeCacheDataInfo.setBizCode(bizCode);
+		codeCacheDataInfo.setTemplateData(templateCacheData);
+		codeCacheDataInfo.setSerialNumKey(redisSerialNumKey);
+		codeCacheDataInfo.setMaxSerialNumKey(redisMaxSerialNumKey);
+		return codeCacheDataInfo;
 	}
 }

@@ -13,7 +13,6 @@ import com.hivescm.code.exception.CodeErrorCode;
 import com.hivescm.code.exception.CodeException;
 import com.hivescm.code.mapper.*;
 import com.hivescm.code.service.BizTypeService;
-import com.hivescm.code.utils.CodeRedisUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -25,7 +24,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * <b>Description:</b><br>
@@ -128,10 +129,11 @@ public class BizTypeServiceImpl implements BizTypeService {
 		// 物理删除绑定当前当前业务类型的编码规则的组织关系
 		ruleItemRelationMapper.deleteByRuleIds(ruleIds);
 
-		// 移除业务编码在Redis中的相关缓存
+		// TODO
+		/*// 移除业务编码在Redis中的相关缓存
 		jedisClient.delete(CodeRedisUtil.codeTemplatePrefix(bizCode), CodeRedisUtil.codeSerialNumPrefix(bizCode),
 				CodeRedisUtil.codeMaxSerialNumPrefix(bizCode));
-
+		*/
 	}
 
 	@Override
@@ -162,19 +164,30 @@ public class BizTypeServiceImpl implements BizTypeService {
 	private List<BizTypeMetadataBean> initTypeMetadata(final BizTypeDto bizTypeDto, final BizTypeBean newBizTypeBean) {
 
 		final List<BizTypeMetadataDto> metadatas = bizTypeDto.getMetadatas();
-		if (CollectionUtils.isEmpty(metadatas)) {
-			return null;
-		}
-		List<BizTypeMetadataBean> bizTypeMetadataBeans = new ArrayList<>(metadatas.size());
-		for (BizTypeMetadataDto metadata : metadatas) {
-			BizTypeMetadataBean bizTypeMetadataBean = new BizTypeMetadataBean();
-			BeanUtils.copyProperties(metadata, bizTypeMetadataBean);
-			bizTypeMetadataBean.setTypeId(newBizTypeBean.getId());
-			bizTypeMetadataBean.setCreateTime(System.currentTimeMillis());
-			bizTypeMetadataBean.setCreateUser(newBizTypeBean.getCreateUser());
-			bizTypeMetadataBeans.add(bizTypeMetadataBean);
-		}
-		return bizTypeMetadataBeans;
-	}
+		final long currentTimeMillis = System.currentTimeMillis();
 
+		Set<BizTypeMetadataBean> bizTypeMetadataBeans = new HashSet<>();
+
+		// 初始化默认配置
+		BizTypeMetadataBean systemTimeMetadata = new BizTypeMetadataBean();
+		systemTimeMetadata.setTypeId(newBizTypeBean.getId());
+		systemTimeMetadata.setCreateTime(currentTimeMillis);
+		systemTimeMetadata.setCreateUser(newBizTypeBean.getCreateUser());
+		systemTimeMetadata.setMetadataName("systemTime");
+		systemTimeMetadata.setMetadataShow("系统时间");
+		bizTypeMetadataBeans.add(systemTimeMetadata);
+
+		if (!CollectionUtils.isEmpty(metadatas)) {
+			for (BizTypeMetadataDto metadata : metadatas) {
+				BizTypeMetadataBean bizTypeMetadataBean = new BizTypeMetadataBean();
+				BeanUtils.copyProperties(metadata, bizTypeMetadataBean);
+				bizTypeMetadataBean.setTypeId(newBizTypeBean.getId());
+				bizTypeMetadataBean.setCreateTime(currentTimeMillis);
+				bizTypeMetadataBean.setCreateUser(newBizTypeBean.getCreateUser());
+				bizTypeMetadataBeans.add(bizTypeMetadataBean);
+			}
+		}
+
+		return new ArrayList<>(bizTypeMetadataBeans);
+	}
 }

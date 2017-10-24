@@ -1,6 +1,7 @@
 package com.hivescm.code.mapper;
 
 import com.hivescm.code.bean.CodeRuleBean;
+import com.hivescm.code.bean.CodeRuleInfoBean;
 import com.mogujie.trade.db.DataSourceRouting;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,6 +30,22 @@ public interface CodeRuleMapper {
 	 * @return 编码规则自增ID
 	 */
 	int addCodeRule(@Param(value = "bean") CodeRuleBean bean);
+
+	/**
+	 * 更新其它为非默认状态
+	 *
+	 * @param groupId 集团ID（平台为1）
+	 * @param bizCode 业务编码
+	 */
+	void updateOtherNoDefault(@Param(value = "groupId") Integer groupId, @Param(value = "bizCode") String bizCode);
+
+	/**
+	 * 更新其它为非默认状态
+	 *
+	 * @param groupId 集团ID（平台为1）
+	 * @param ruleName 规则名字
+	 */
+	CodeRuleInfoBean queryConflicRuleName(@Param(value = "groupId") Integer groupId, @Param(value = "ruleName") String ruleName);
 
 	/**
 	 * 根据业务编码查询编码规则（锁）

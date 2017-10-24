@@ -66,19 +66,4 @@ public class CodeController implements ICodeDoc {
 		}
 
 	}
-
-	@Override
-	public DataResult<Boolean> initCodeTemplate() {
-		LOGGER.info("init code template");
-		try {
-			// TODO
-			return DataResult.success(Boolean.TRUE, Boolean.class);
-		} catch (CodeException ce) {
-			LOGGER.error("init code template failed", ce);
-			return DataResult.faild(ce.getErrorCode(), ce.getMessage());
-		} catch (Exception ex) {
-			LOGGER.error("init code template error", ex);
-			return DataResult.faild(CodeErrorCode.CODE_SYSTEM_ERROR_CODE, Constants.CODE_SERVICE_ERROR);
-		}
-	}
 }

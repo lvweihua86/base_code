@@ -25,6 +25,4 @@ public interface CodeService {
 	 * @return 编码
 	 */
 	CodeResult generateCode(final GenerateCode reqParam);
-
-	void initCodeIDTemplate();
 }

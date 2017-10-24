@@ -7,7 +7,6 @@
         system_name,
         biz_name,
         biz_code,
-        state,
         create_user,
         create_time
     </sql>
@@ -24,7 +23,6 @@
         #{bean.systemName},
         #{bean.bizName},
         #{bean.bizCode},
-        #{bean.state},
         #{bean.createUser},
         #{bean.createTime}
         )

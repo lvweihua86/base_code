@@ -46,6 +46,7 @@ public class CodeItemDto implements Serializable {
 	private Integer serialType = 0;
 	/**
 	 * 补位方式（不填）
+	 * {@link com.hivescm.code.enums.CoverWayEnum}
 	 * 1左补位；
 	 * 2右补位;
 	 * 3不补位。

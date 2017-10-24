@@ -1,5 +1,6 @@
 package com.hivescm.code.validator;
 
+import com.hivescm.code.common.Constants;
 import com.hivescm.code.dto.CodeItemDto;
 import com.hivescm.code.dto.CodeRuleDto;
 import com.hivescm.code.enums.ItemTypeEnum;
@@ -35,14 +36,6 @@ public class AddCodeRuleValidator {
 		if (reqParam == null) {
 			LOGGER.warn("add code rule req param is null.");
 			throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "新增编码规则请求参数为空");
-		}
-
-		final Integer ruleLevel = reqParam.getRuleLevel();
-		try {
-			LevelEnum.getLevel(ruleLevel);
-		} catch (Exception e) {
-			LOGGER.warn("add code rule req ilegall param,[ruleLevel]={}.", ruleLevel);
-			throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "新增编码规则,非法请求参数【ruleLevel】");
 		}
 
 		final Integer groupId = reqParam.getGroupId();

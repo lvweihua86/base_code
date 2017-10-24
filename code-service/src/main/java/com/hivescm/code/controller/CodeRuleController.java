@@ -3,11 +3,13 @@ package com.hivescm.code.controller;
 import com.hivescm.cache.client.JedisClient;
 import com.hivescm.code.common.Constants;
 import com.hivescm.code.controller.doc.ICodeRuleDoc;
+import com.hivescm.code.dto.AllocateCodeRuleDto;
 import com.hivescm.code.dto.CodeRuleDto;
 import com.hivescm.code.exception.CodeErrorCode;
 import com.hivescm.code.exception.CodeException;
 import com.hivescm.code.service.CodeRuleService;
 import com.hivescm.code.validator.AddCodeRuleValidator;
+import com.hivescm.code.validator.AllocateCodeRuleValidator;
 import com.hivescm.common.domain.DataResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,9 @@ public class CodeRuleController implements ICodeRuleDoc {
 	private AddCodeRuleValidator addCodeRuleValidator;
 
 	@Resource
+	private AllocateCodeRuleValidator allocateCodeRuleValidator;
+
+	@Resource
 	private CodeRuleService codeRuleService;
 
 	@Autowired
@@ -57,6 +62,24 @@ public class CodeRuleController implements ICodeRuleDoc {
 			return DataResult.faild(ce.getErrorCode(), ce.getMessage());
 		} catch (Exception ex) {
 			LOGGER.error("add code rule error,param:" + reqParam, ex);
+			return DataResult.faild(CodeErrorCode.CODE_SYSTEM_ERROR_CODE, Constants.CODE_SERVICE_ERROR);
+		}
+	}
+
+	@Override
+	public DataResult<Boolean> allocateCodeRule(@RequestBody AllocateCodeRuleDto reqParam) {
+		LOGGER.info("allocate code rule request,param:{}.", reqParam);
+		try {
+			allocateCodeRuleValidator.validate(reqParam);
+
+			codeRuleService.allocateCodeRule(reqParam);
+
+			return DataResult.success(Boolean.TRUE, Boolean.class);
+		} catch (CodeException ce) {
+			LOGGER.error("allocate code rule failed,param:" + reqParam, ce);
+			return DataResult.faild(ce.getErrorCode(), ce.getMessage());
+		} catch (Exception ex) {
+			LOGGER.error("allocate code rule error,param:" + reqParam, ex);
 			return DataResult.faild(CodeErrorCode.CODE_SYSTEM_ERROR_CODE, Constants.CODE_SERVICE_ERROR);
 		}
 	}

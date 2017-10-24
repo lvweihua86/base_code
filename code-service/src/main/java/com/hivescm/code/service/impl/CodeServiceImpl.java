@@ -1,21 +1,35 @@
 package com.hivescm.code.service.impl;
 
+import com.hivescm.cache.client.JedisClient;
+import com.hivescm.code.bean.CodeItemBean;
+import com.hivescm.code.bean.CodeRuleBean;
 import com.hivescm.code.cache.CodeCacheDataInfo;
-import com.hivescm.code.cache.MysqlCodeCache;
 import com.hivescm.code.cache.RedisCodeCache;
+import com.hivescm.code.cache.TemplateCache;
+import com.hivescm.code.cache.TemplateCacheData;
 import com.hivescm.code.dto.CodeResult;
 import com.hivescm.code.dto.GenerateCode;
+import com.hivescm.code.enums.CoverWayEnum;
+import com.hivescm.code.enums.CutWayEnum;
+import com.hivescm.code.enums.ItemTypeEnum;
+import com.hivescm.code.exception.CodeErrorCode;
+import com.hivescm.code.exception.CodeException;
 import com.hivescm.code.mapper.CodeItemMapper;
 import com.hivescm.code.mapper.CodeRuleMapper;
+import com.hivescm.code.mapper.RuleItemRelationMapper;
 import com.hivescm.code.service.CodeService;
+import com.hivescm.code.task.SerialNumIncrTask;
+import com.hivescm.code.utils.DateUtil;
+import com.hivescm.code.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.annotation.Resource;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 /**
  * <b>Description:</b><br>
@@ -39,33 +53,141 @@ public class CodeServiceImpl implements CodeService {
 
 	@Autowired
 	private CodeItemMapper codeItemMapper;
+	@Autowired
+	private RuleItemRelationMapper ruleItemRelationMapper;
 
 	@Resource
 	private RedisCodeCache redisCodeCache;
 
 	@Resource
-	private MysqlCodeCache mysqlCodeCache;
+	private TemplateCache templateCache;
 
+	@Autowired
+	private JedisClient jedisClient;
+
+	/**
+	 * 生成编码
+	 *
+	 * @param reqParam 生成编码请求参数
+	 * @return
+	 */
 	public CodeResult generateCode(final GenerateCode reqParam) {
-
-		final CodeCacheDataInfo cacheData = redisCodeCache.getCacheData(reqParam);
-		if (cacheData.hasCaceh()) {
-			return generateCodeByCache(cacheData);
-		}else{
-			mysqlCodeCache.findAndInitCodeRule(reqParam);
+		final CodeCacheDataInfo cacheData = templateCache.getCodeInfo(reqParam);
+		if (!cacheData.hasCache()) {
+			throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "无对应的编码规则");
 		}
-
-		return null;
+		return generateCodeByCache(cacheData, reqParam);
 	}
 
-	private CodeResult generateCodeByCache(final CodeCacheDataInfo cacheData) {
+	/**
+	 * 依据 Redis 缓存数据生成编码
+	 *
+	 * @param cacheData 缓存数据
+	 * @return 编码结果
+	 */
+	private CodeResult generateCodeByCache(final CodeCacheDataInfo cacheData, final GenerateCode reqParam) {
 		CodeResult codeResult = new CodeResult();
+
+		final TemplateCacheData templateData = cacheData.getTemplateData();
+		final CodeRuleBean codeRule = templateData.getCodeRule();
+		final List<CodeItemBean> codeItems = templateData.getCodeItems();
+
+		StringBuilder codeBuilder = new StringBuilder();
+		for (CodeItemBean codeItem : codeItems) {
+			final Integer itemType = codeItem.getItemType();
+			final ItemTypeEnum itemTypeEnum = ItemTypeEnum.getItemTypeEnum(itemType);
+			switch (itemTypeEnum) {
+			case CONSTANT:
+				constantItem(codeBuilder, codeItem);
+				break;
+			case STRING:
+				stringItem(codeBuilder, codeItem, reqParam);
+				break;
+			case TIME:
+				timeItem(codeBuilder, codeItem, reqParam, codeRule);
+				break;
+			case SERIAL:
+				serialItem(codeBuilder, codeItem, reqParam, codeRule, cacheData);
+				break;
+			default:
+				throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "不支持的编码项类型");
+			}
+		}
+		codeResult.setCode(codeBuilder.toString());
+		codeResult.setRuleId(codeRule.getId());
 		return codeResult;
 	}
 
-	@Override
-	public void initCodeIDTemplate() {
+	/**
+	 * 常量处理
+	 *
+	 * @param codeBuilder
+	 * @param codeItem
+	 */
+	private void constantItem(StringBuilder codeBuilder, CodeItemBean codeItem) {
+		final String itemValue = codeItem.getItemValue();
+		codeBuilder.append(itemValue);
+	}
 
+	/**
+	 * 支付串处理
+	 *
+	 * @param codeBuilder
+	 * @param codeItem
+	 */
+	private void stringItem(StringBuilder codeBuilder, CodeItemBean codeItem, final GenerateCode reqParam) {
+		final Map<String, String> entityAttr = reqParam.getBizAttr();
+		final String itemValue = codeItem.getItemValue();
+		final String attrValue = entityAttr.get(itemValue);
+		if (StringUtils.isEmpty(attrValue)) {
+			LOGGER.warn("generate code illegal param:{},itemValue:{} is null.", reqParam, itemValue);
+			throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "编码请求，缺失字符值【" + itemValue + "】");
+		}
+		final String stringItemValue = StringUtils.coverLength(codeItem.getItemLength(),CutWayEnum.CUT_RIGHT, attrValue, "0", CoverWayEnum.RIGHT);
+		codeBuilder.append(stringItemValue);
+	}
+
+	/**
+	 * 支付串处理
+	 *
+	 * @param codeBuilder 字符构建
+	 * @param codeItem    编码项
+	 * @param reqParam    编码请求参数
+	 * @param codeRule    编码规则
+	 */
+	private void timeItem(StringBuilder codeBuilder, CodeItemBean codeItem, final GenerateCode reqParam,
+			final CodeRuleBean codeRule) {
+		final Map<String, Date> bizTime = reqParam.getBizTime();
+		final String itemValue = codeItem.getItemValue();
+		Date bizDate = bizTime.get(itemValue);
+		final String timeFormat = codeRule.getTimeFormat();
+
+		if ("systemTime".equals(itemValue)) {
+			bizDate = bizDate == null ? new Date() : bizDate;
+		}
+
+		final String formateDate = DateUtil.formateDate(bizDate, timeFormat);
+		codeBuilder.append(formateDate);
+	}
+
+	/**
+	 * 支付串处理
+	 *
+	 * @param codeBuilder 字符构建
+	 * @param codeItem    编码项
+	 * @param reqParam    编码请求参数
+	 * @param codeRule    编码规则
+	 */
+	private void serialItem(StringBuilder codeBuilder, CodeItemBean codeItem, final GenerateCode reqParam,
+			final CodeRuleBean codeRule, final CodeCacheDataInfo cacheData) {
+
+		final Long serialNum = jedisClient.incrOneByKey(cacheData.getSerialNumKey());
+		final String newSerialNum = StringUtils.coverLength(codeItem.getItemLength(), CutWayEnum.CUT_LEFT, serialNum + "", "0", CoverWayEnum.LEFT);
+		final Long maxSerialNum = Long.valueOf(jedisClient.get(cacheData.getMaxSerialNumKey()));
+		// 启动任务处理Mysql 缓存的流水号
+		new SerialNumIncrTask(cacheData, jedisClient, ruleItemRelationMapper).execute();
+
+		codeBuilder.append(newSerialNum);
 	}
 }
 

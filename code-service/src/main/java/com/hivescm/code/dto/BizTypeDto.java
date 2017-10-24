@@ -19,8 +19,8 @@ public class BizTypeDto extends BaseCreateDto {
 	private static final long serialVersionUID = 1L;
 	/**
 	 * 规则级别
-	 * <li>1,平台</li>
-	 * <li>2,通用</li>
+	 * <li>1,平台级</li>
+	 * <li>2,集团级</li>
 	 */
 	private Integer typeLevel;
 	/**

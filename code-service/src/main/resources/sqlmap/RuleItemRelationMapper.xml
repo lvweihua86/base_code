@@ -2,6 +2,70 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hivescm.code.mapper.RuleItemRelationMapper">
+    <sql id="insert_base_list">
+        id,
+        rule_id,
+        group_id,
+        org_id,
+        biz_code,
+        is_default,
+        step_size,
+        step_num,
+        create_user,
+        create_time
+    </sql>
+
+    <!--规则与组织关系数据实体-->
+    <insert id="addRelation" parameterType="com.hivescm.code.bean.RuleItemRelationBean" useGeneratedKeys="true"
+            keyProperty="bean.id">
+        insert into base_code_rule_org_relation
+        (<include refid="insert_base_list"/>)
+        values(
+        #{bean.id},
+        #{bean.ruleId},
+        #{bean.groupId},
+        #{bean.orgId},
+        #{bean.bizCode},
+        #{bean.defaulted},
+        #{bean.stepSize},
+        #{bean.stepNum},
+        #{bean.createUser},
+        #{bean.createTime}
+        )
+    </insert>
+
+    <!--增加缓存步数-->
+    <update id="incrCacheStepNum">
+        update base_code_rule_org_relation
+        SET
+        step_num =  step_num+#{num},
+        update_time=unix_timestamp(now()),
+        update_user=1
+        where id=#{id}
+    </update>
+
+    <!--更新关系的默认状态-->
+    <update id="updateRelationDefaultState">
+        update base_code_rule_org_relation
+        SET
+        is_default = #{defaulted},
+        update_time=unix_timestamp(now()),
+        update_user=1
+        where id in
+        <foreach collection="ids" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <!--更新组织关系的默认状态-->
+    <update id="updateOrgRelationDefaultState">
+        update base_code_rule_org_relation
+        SET
+        is_default = #{defaulted},
+        update_time=unix_timestamp(now()),
+        update_user=1
+        where group_id =#{groupId} and org_id =#{orgId} and biz_code=#{bizCode}
+    </update>
 
     <!--查询组织对应的业务编码绑定的默认编码规则（锁）-->
     <select id="queryDefaultBandingRuleLock" resultType="com.hivescm.code.bean.RuleItemRelationBean">
@@ -11,16 +75,30 @@
         group_id as groupId,
         org_id as orgId,
         biz_code as bizCode,
-        defaulted as defaulted,
+        is_default as defaulted,
         step_size as stepSize,
         step_num as stepNum
         from base_code_rule_org_relation
-        where org_id = #{orgId} and biz_code=#{bizCode} and defaulted = 1
+        where group_id = #{groupId} and org_id = #{orgId} and biz_code=#{bizCode} and is_default = 1
+    </select>
+
+    <select id="queryBandingRuleLock" resultType="com.hivescm.code.bean.RuleItemRelationBean">
+        select
+        id as id,
+        is_default as defaulted,
+        rule_id as ruleId,
+        group_id as groupId,
+        org_id as orgId,
+        biz_code as bizCode,
+        step_size as stepSize,
+        step_num as stepNum
+        from base_code_rule_org_relation
+        where group_id = #{groupId} and org_id = #{orgId} and biz_code=#{bizCode} for update
     </select>
 
     <!--依据规则ID删除规则与项关系表-->
     <delete id="deleteByRuleIds">
-        delete from base_code_rule_item_relation where rule_id in
+        delete from base_code_rule_org_relation where rule_id in
         <foreach collection="ruleIds" item="ruleId" open="(" separator="," close=")">
             #{ruleId}
         </foreach>
