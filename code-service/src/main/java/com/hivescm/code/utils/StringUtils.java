@@ -26,6 +26,11 @@ public class StringUtils {
 	 */
 	public static final String coverLength(Integer expectLength, CutWayEnum cutWayEnum, String str, String coverChar,
 			CoverWayEnum coverWay) {
+
+		if (str == null) {
+			return str;
+		}
+
 		final int strLength = str.length();
 		if (strLength == expectLength) {
 			return str;

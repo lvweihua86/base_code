@@ -104,10 +104,6 @@ public class CodeRuleDto implements Serializable {
 		return zeroReason;
 	}
 
-	public void setZeroReason(Integer zeroReason) {
-		this.zeroReason = zeroReason;
-	}
-
 	public Integer getDefaulted() {
 		return defaulted;
 	}

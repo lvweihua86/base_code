@@ -71,7 +71,7 @@ public class BizTypeController implements IBizTypeDoc {
 	}
 
 	@Override
-	public DataResult<List<BizTypeInfoDto>> queryAllAavailableBizTypes(@RequestBody BizTypeQueryDto reqParam) {
+	public DataResult<List<BizTypeInfoDto>> queryAllBizTypes(@RequestBody BizTypeQueryDto reqParam) {
 		LOGGER.info("query biz type req,aram:{}.", reqParam);
 		try {
 			bizTypeQueryValidator.validate(reqParam);

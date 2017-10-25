@@ -86,6 +86,14 @@ public interface RuleItemRelationMapper {
 			@Param(value = "orgId") Integer orgId);
 
 	/**
+	 * 查询业务编码绑定的所有编码规则
+	 *
+	 * @param bizCode 业务编码
+	 * @return 绑定关系集合
+	 */
+	List<RuleItemRelationBean> queryBizCodeAllBandingRelations(@Param(value = "bizCode") String bizCode);
+
+	/**
 	 * 依据规则ID删除规则与项关系表
 	 *
 	 * @param ruleIds 规则ID集合

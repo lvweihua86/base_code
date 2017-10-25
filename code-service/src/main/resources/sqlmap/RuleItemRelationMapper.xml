@@ -82,6 +82,7 @@
         where group_id = #{groupId} and org_id = #{orgId} and biz_code=#{bizCode} and is_default = 1
     </select>
 
+    <!--查询组织对应的业务编码绑定的默认编码规则（锁）-->
     <select id="queryBandingRuleLock" resultType="com.hivescm.code.bean.RuleItemRelationBean">
         select
         id as id,
@@ -94,6 +95,21 @@
         step_num as stepNum
         from base_code_rule_org_relation
         where group_id = #{groupId} and org_id = #{orgId} and biz_code=#{bizCode} for update
+    </select>
+
+    <!--查询业务编码绑定的所有编码规则-->
+    <select id="queryBizCodeAllBandingRelations" parameterType="string" resultType="com.hivescm.code.bean.RuleItemRelationBean">
+        select
+        id as id,
+        is_default as defaulted,
+        rule_id as ruleId,
+        group_id as groupId,
+        org_id as orgId,
+        biz_code as bizCode,
+        step_size as stepSize,
+        step_num as stepNum
+        from base_code_rule_org_relation
+        where  biz_code=#{bizCode} for update
     </select>
 
     <!--依据规则ID删除规则与项关系表-->

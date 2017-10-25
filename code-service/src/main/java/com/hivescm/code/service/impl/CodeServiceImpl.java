@@ -7,6 +7,7 @@ import com.hivescm.code.cache.CodeCacheDataInfo;
 import com.hivescm.code.cache.RedisCodeCache;
 import com.hivescm.code.cache.TemplateCache;
 import com.hivescm.code.cache.TemplateCacheData;
+import com.hivescm.code.common.Constants;
 import com.hivescm.code.dto.CodeResult;
 import com.hivescm.code.dto.GenerateCode;
 import com.hivescm.code.enums.CoverWayEnum;
@@ -27,6 +28,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -69,7 +71,7 @@ public class CodeServiceImpl implements CodeService {
 	 * 生成编码
 	 *
 	 * @param reqParam 生成编码请求参数
-	 * @return
+	 * @return 编码结果
 	 */
 	public CodeResult generateCode(final GenerateCode reqParam) {
 		final CodeCacheDataInfo cacheData = templateCache.getCodeInfo(reqParam);
@@ -98,7 +100,7 @@ public class CodeServiceImpl implements CodeService {
 			final ItemTypeEnum itemTypeEnum = ItemTypeEnum.getItemTypeEnum(itemType);
 			switch (itemTypeEnum) {
 			case CONSTANT:
-				constantItem(codeBuilder, codeItem);
+				constantItem(codeBuilder, codeItem, reqParam);
 				break;
 			case STRING:
 				stringItem(codeBuilder, codeItem, reqParam);
@@ -121,29 +123,38 @@ public class CodeServiceImpl implements CodeService {
 	/**
 	 * 常量处理
 	 *
-	 * @param codeBuilder
-	 * @param codeItem
+	 * @param codeBuilder 编码构建
+	 * @param codeItem    编码项
 	 */
-	private void constantItem(StringBuilder codeBuilder, CodeItemBean codeItem) {
+	private void constantItem(StringBuilder codeBuilder, CodeItemBean codeItem, final GenerateCode reqParam) {
 		final String itemValue = codeItem.getItemValue();
-		codeBuilder.append(itemValue);
+		final Integer itemLength = codeItem.getItemLength();
+		if (StringUtils.isEmpty(itemValue)) {
+			return;
+		}
+		final String constantValue = StringUtils.coverLength(itemLength, CutWayEnum.CUT_RIGHT, itemValue, "0", CoverWayEnum
+				.NO);
+
+		codeBuilder.append(constantValue);
 	}
 
 	/**
 	 * 支付串处理
 	 *
-	 * @param codeBuilder
-	 * @param codeItem
+	 * @param codeBuilder 编码构建
+	 * @param codeItem    编码项
 	 */
 	private void stringItem(StringBuilder codeBuilder, CodeItemBean codeItem, final GenerateCode reqParam) {
 		final Map<String, String> entityAttr = reqParam.getBizAttr();
 		final String itemValue = codeItem.getItemValue();
 		final String attrValue = entityAttr.get(itemValue);
 		if (StringUtils.isEmpty(attrValue)) {
-			LOGGER.warn("generate code illegal param:{},itemValue:{} is null.", reqParam, itemValue);
-			throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "编码请求，缺失字符值【" + itemValue + "】");
+			return;
+			/*LOGGER.warn("generate code illegal param:{},itemValue:{} is null.", reqParam, itemValue);
+			throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "编码请求，缺失字符值【" + itemValue + "】");*/
 		}
-		final String stringItemValue = StringUtils.coverLength(codeItem.getItemLength(),CutWayEnum.CUT_RIGHT, attrValue, "0", CoverWayEnum.RIGHT);
+		final String stringItemValue = StringUtils
+				.coverLength(codeItem.getItemLength(), CutWayEnum.CUT_RIGHT, attrValue, "0", CoverWayEnum.NO);
 		codeBuilder.append(stringItemValue);
 	}
 
@@ -157,16 +168,28 @@ public class CodeServiceImpl implements CodeService {
 	 */
 	private void timeItem(StringBuilder codeBuilder, CodeItemBean codeItem, final GenerateCode reqParam,
 			final CodeRuleBean codeRule) {
-		final Map<String, Date> bizTime = reqParam.getBizTime();
-		final String itemValue = codeItem.getItemValue();
-		Date bizDate = bizTime.get(itemValue);
-		final String timeFormat = codeRule.getTimeFormat();
-
-		if ("systemTime".equals(itemValue)) {
-			bizDate = bizDate == null ? new Date() : bizDate;
+		final Map<String, String> bizAttr = reqParam.getBizAttr();
+		if (bizAttr == null) {
+			return;
 		}
 
-		final String formateDate = DateUtil.formateDate(bizDate, timeFormat);
+		final String itemValue = codeItem.getItemValue();
+		String bizDate = bizAttr.get(itemValue);
+		final String timeFormat = codeRule.getTimeFormat();
+
+		if (Constants.PLATFORM_DEFAULT_METADATA_SYSTEM_TIME.equals(itemValue)) {
+			if (StringUtils.isEmpty(bizDate)) {
+				SimpleDateFormat sdf = new SimpleDateFormat(timeFormat);
+				bizDate = sdf.format(new Date());
+			}
+		}
+		String formateDate;
+		try {
+			formateDate = DateUtil.formateDate(bizDate, timeFormat);
+		} catch (Exception e) {
+			LOGGER.warn("时间类型格式错误，param:{}.", bizAttr);
+			throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "非法时间格式");
+		}
 		codeBuilder.append(formateDate);
 	}
 
@@ -182,7 +205,8 @@ public class CodeServiceImpl implements CodeService {
 			final CodeRuleBean codeRule, final CodeCacheDataInfo cacheData) {
 
 		final Long serialNum = jedisClient.incrOneByKey(cacheData.getSerialNumKey());
-		final String newSerialNum = StringUtils.coverLength(codeItem.getItemLength(), CutWayEnum.CUT_LEFT, serialNum + "", "0", CoverWayEnum.LEFT);
+		final String newSerialNum = StringUtils
+				.coverLength(codeItem.getItemLength(), CutWayEnum.CUT_LEFT, serialNum + "", "0", CoverWayEnum.LEFT);
 		final Long maxSerialNum = Long.valueOf(jedisClient.get(cacheData.getMaxSerialNumKey()));
 		// 启动任务处理Mysql 缓存的流水号
 		new SerialNumIncrTask(cacheData, jedisClient, ruleItemRelationMapper).execute();

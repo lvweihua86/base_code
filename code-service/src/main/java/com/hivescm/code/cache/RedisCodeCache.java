@@ -14,7 +14,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -76,6 +78,57 @@ public class RedisCodeCache {
 		String redisMaxSerialNumKey = Constants.BIZ_UNIT_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + orgId + ":" + bizCode;
 
 		jedisClient.delete(redisTemplateKey, redisSerialNumKey, redisMaxSerialNumKey);
+	}
+
+	/**
+	 * 批量删除缓存
+	 *
+	 * @param bindingRelations 规则绑定关系
+	 */
+	public void batchDeleteCache(final List<RuleItemRelationBean> bindingRelations) {
+		if (CollectionUtils.isEmpty(bindingRelations)) {
+			return;
+		}
+
+		final List<String> allKeies = new ArrayList<>(bindingRelations.size() * 3);
+		for (RuleItemRelationBean bindingRelation : bindingRelations) {
+			List<String> keies = jointCacheKey(bindingRelation);
+			allKeies.addAll(keies);
+
+		}
+		jedisClient.delete(allKeies.toArray(new String[0]));
+	}
+
+	/**
+	 * 依据绑定关系拼接Redis缓存key
+	 *
+	 * @param bindingRelation 规则与组织的绑定关系
+	 * @return Redis 缓存keies
+	 */
+	private List<String> jointCacheKey(final RuleItemRelationBean bindingRelation) {
+		List<String> keies = new ArrayList<>(3);
+
+		final Integer groupId = bindingRelation.getGroupId();
+		final String bizCode = bindingRelation.getBizCode();
+		if (groupId == Constants.PLATFORM_GROUP_ID) {
+			keies.add(Constants.PLATFORM_CODE_TEMPLATE_REDIS_PREFIX + bizCode);
+			keies.add(Constants.PLATFORM_CODE_SERIAL_NUM_REDIS_PREFIX + bizCode);
+			keies.add(Constants.PLATFORM_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + bizCode);
+			return keies;
+		}
+
+		final Integer orgId = bindingRelation.getOrgId();
+		if (orgId == Constants.NO_ORG_ID) {
+			keies.add(Constants.GROUP_CODE_TEMPLATE_REDIS_PREFIX + groupId + ":" + bizCode);
+			keies.add(Constants.GROUP_CODE_SERIAL_NUM_REDIS_PREFIX + groupId + ":" + bizCode);
+			keies.add(Constants.GROUP_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + groupId + ":" + bizCode);
+			return keies;
+		}
+
+		keies.add(Constants.BIZ_UNIT_CODE_TEMPLATE_REDIS_PREFIX + orgId + ":" + bizCode);
+		keies.add(Constants.BIZ_UNIT_CODE_SERIAL_NUM_REDIS_PREFIX + orgId + ":" + bizCode);
+		keies.add(Constants.BIZ_UNIT_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + orgId + ":" + bizCode);
+		return keies;
 	}
 
 	/**

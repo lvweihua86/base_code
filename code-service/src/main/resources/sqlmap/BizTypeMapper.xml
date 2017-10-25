@@ -65,7 +65,7 @@
         biz_name as bizName,
         biz_code as bizCode
         from base_code_biz_type WHERE
-        <trim prefix="and">
+        <trim prefixOverrides="and">
             <if test="queryParam.systemName != null">
                 system_name like #{queryParam.systemName}
             </if>

@@ -35,6 +35,10 @@ public class BizTypeDto extends BaseCreateDto {
 	 * 业务编码
 	 */
 	private String bizCode;
+	/**
+	 * 自定义编码前缀(长度不大于10)
+	 */
+	private String customPrefix;
 
 	private List<BizTypeMetadataDto> metadatas;
 
@@ -73,6 +77,14 @@ public class BizTypeDto extends BaseCreateDto {
 		this.bizCode = bizCode;
 	}
 
+	public String getCustomPrefix() {
+		return customPrefix;
+	}
+
+	public void setCustomPrefix(String customPrefix) {
+		this.customPrefix = customPrefix;
+	}
+
 	public List<BizTypeMetadataDto> getMetadatas() {
 		return metadatas;
 	}
@@ -89,6 +101,7 @@ public class BizTypeDto extends BaseCreateDto {
 		sb.append(", systemName='").append(systemName).append('\'');
 		sb.append(", bizName='").append(bizName).append('\'');
 		sb.append(", bizCode='").append(bizCode).append('\'');
+		sb.append(", customPrefix='").append(customPrefix).append('\'');
 		sb.append(", metadatas='").append(metadatas).append('\'');
 		sb.append('}');
 		return sb.toString();

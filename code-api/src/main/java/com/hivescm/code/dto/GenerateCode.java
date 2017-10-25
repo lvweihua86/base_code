@@ -1,7 +1,6 @@
 package com.hivescm.code.dto;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,18 +27,15 @@ public class GenerateCode implements Serializable {
 	 * 业务编码（必填）
 	 */
 	private String bizCode;
+
 	/**
 	 * 业务实体可能参与编码的字符类型域
 	 * 业务实体列表存储的 field_name 为必填，
 	 * 当取对应值时返回指定错误码，客户端自行处理；
+	 * <p>
+	 * 时间类型的格式为：yyyyMMdd（没有什么字符串是解决不了的）
 	 */
 	private Map<String, String> bizAttr = new HashMap<>(10, 1);
-	/**
-	 * 业务时间，时间类型的编码规则使用
-	 * 业务实体列表存储的 field_name 为必填，
-	 * 当取对应值时返回指定错误码，客户端自行处理；
-	 */
-	private Map<String, Date> bizTime = new HashMap<>(5, 1);
 
 	public GenerateCode() {
 	}
@@ -76,14 +72,6 @@ public class GenerateCode implements Serializable {
 		this.bizAttr = bizAttr;
 	}
 
-	public Map<String, Date> getBizTime() {
-		return bizTime;
-	}
-
-	public void setBizTime(Map<String, Date> bizTime) {
-		this.bizTime = bizTime;
-	}
-
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("GenerateCode{");
@@ -91,7 +79,6 @@ public class GenerateCode implements Serializable {
 		sb.append(", orgId=").append(orgId);
 		sb.append(", bizCode='").append(bizCode).append('\'');
 		sb.append(", bizAttr=").append(bizAttr);
-		sb.append(", bizTime=").append(bizTime);
 		sb.append('}');
 		return sb.toString();
 	}

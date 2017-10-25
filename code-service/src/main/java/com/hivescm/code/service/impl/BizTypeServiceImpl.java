@@ -1,18 +1,17 @@
 package com.hivescm.code.service.impl;
 
-import com.hivescm.cache.client.JedisClient;
-import com.hivescm.code.bean.BizTypeBean;
-import com.hivescm.code.bean.BizTypeInfoBean;
-import com.hivescm.code.bean.BizTypeMetadataBean;
-import com.hivescm.code.bean.BizTypeMetadataInfoBean;
-import com.hivescm.code.dto.BizTypeDto;
-import com.hivescm.code.dto.BizTypeMetadataDto;
-import com.hivescm.code.dto.BizTypeQueryDto;
-import com.hivescm.code.dto.KeyOperateDto;
+import com.hivescm.code.bean.*;
+import com.hivescm.code.cache.RedisCodeCache;
+import com.hivescm.code.common.Constants;
+import com.hivescm.code.dto.*;
+import com.hivescm.code.enums.BooleanEnum;
+import com.hivescm.code.enums.ItemTypeEnum;
 import com.hivescm.code.exception.CodeErrorCode;
 import com.hivescm.code.exception.CodeException;
 import com.hivescm.code.mapper.*;
 import com.hivescm.code.service.BizTypeService;
+import com.hivescm.code.service.CodeRuleService;
+import com.hivescm.code.utils.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -23,6 +22,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.Resource;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -60,8 +60,11 @@ public class BizTypeServiceImpl implements BizTypeService {
 	@Autowired
 	private RuleItemRelationMapper ruleItemRelationMapper;
 
-	@Autowired
-	private JedisClient jedisClient;
+	@Resource
+	private RedisCodeCache redisCodeCache;
+
+	@Resource
+	private CodeRuleService codeRuleService;
 
 	@Override
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
@@ -91,6 +94,9 @@ public class BizTypeServiceImpl implements BizTypeService {
 				throw new CodeException(CodeErrorCode.DATE_CONFLIC_ERROR_CODE, "同一业务类型元数据名称重复");
 			}
 		}
+		// 初始化业务类型默认平台级的编码规则
+		final CodeRuleDto codeRuleDto = initPlatform(bizTypeDto);
+		codeRuleService.addCodeRule(codeRuleDto);
 	}
 
 	@Override
@@ -122,18 +128,14 @@ public class BizTypeServiceImpl implements BizTypeService {
 
 		// 物理删除绑定当前当前业务类型的编码规则
 		codeRuleMapper.deleteByIds(ruleIds);
-
 		// 物理删除绑定当前当前业务类型的编码规则项
 		codeItemMapper.deleteByRuleIds(ruleIds);
-
+		final List<RuleItemRelationBean> bindingRelations = ruleItemRelationMapper
+				.queryBizCodeAllBandingRelations(bizCode);
 		// 物理删除绑定当前当前业务类型的编码规则的组织关系
 		ruleItemRelationMapper.deleteByRuleIds(ruleIds);
-
-		// TODO
-		/*// 移除业务编码在Redis中的相关缓存
-		jedisClient.delete(CodeRedisUtil.codeTemplatePrefix(bizCode), CodeRedisUtil.codeSerialNumPrefix(bizCode),
-				CodeRedisUtil.codeMaxSerialNumPrefix(bizCode));
-		*/
+		// 删除该编码规则的所有缓存
+		redisCodeCache.batchDeleteCache(bindingRelations);
 	}
 
 	@Override
@@ -173,9 +175,18 @@ public class BizTypeServiceImpl implements BizTypeService {
 		systemTimeMetadata.setTypeId(newBizTypeBean.getId());
 		systemTimeMetadata.setCreateTime(currentTimeMillis);
 		systemTimeMetadata.setCreateUser(newBizTypeBean.getCreateUser());
-		systemTimeMetadata.setMetadataName("systemTime");
-		systemTimeMetadata.setMetadataShow("系统时间");
+		systemTimeMetadata.setMetadataName(Constants.PLATFORM_DEFAULT_METADATA_SYSTEM_TIME);
+		systemTimeMetadata.setMetadataShow(Constants.PLATFORM_DEFAULT_METADATA_SYSTEM_TIME_SHOW_NAME);
 		bizTypeMetadataBeans.add(systemTimeMetadata);
+
+		// 初始化默认配置
+		BizTypeMetadataBean prefixMetadata = new BizTypeMetadataBean();
+		prefixMetadata.setTypeId(newBizTypeBean.getId());
+		prefixMetadata.setCreateTime(currentTimeMillis);
+		prefixMetadata.setCreateUser(newBizTypeBean.getCreateUser());
+		prefixMetadata.setMetadataName(Constants.PLATFORM_DEFAULT_METADATA_CODE_PREFIX);
+		prefixMetadata.setMetadataShow(Constants.PLATFORM_DEFAULT_METADATA_CODE_PREFIX_SHOW_NAME);
+		bizTypeMetadataBeans.add(prefixMetadata);
 
 		if (!CollectionUtils.isEmpty(metadatas)) {
 			for (BizTypeMetadataDto metadata : metadatas) {
@@ -189,5 +200,43 @@ public class BizTypeServiceImpl implements BizTypeService {
 		}
 
 		return new ArrayList<>(bizTypeMetadataBeans);
+	}
+
+	private CodeRuleDto initPlatform(final BizTypeDto bizTypeDto) {
+		CodeRuleDto codeRule = new CodeRuleDto();
+		codeRule.setGroupId(Constants.PLATFORM_GROUP_ID);
+		codeRule.setDefaulted(BooleanEnum.TRUE.getTruth());
+		codeRule.setBizCode(bizTypeDto.getBizCode());
+		codeRule.setRuleName(bizTypeDto.getBizName() + Constants.PLATFORM_DEFAULT_CODE_PREFIX_SHOW);
+		codeRule.setTotalLenght(4 + 8 + 6);
+
+		List<CodeItemDto> codeItemDtos = new ArrayList<>(3);
+		codeRule.setCodeItems(codeItemDtos);
+
+		CodeItemDto constantItem = new CodeItemDto();
+		constantItem.setItemType(ItemTypeEnum.CONSTANT.getType());
+		constantItem.setOrderNum(1);
+		final String customPrefix = bizTypeDto.getCustomPrefix();
+		// 自定义前缀处理
+		String prefix = StringUtils.isEmpty(customPrefix) ? Constants.PLATFORM_DEFAULT_CODE_PREFIX : customPrefix;
+		constantItem.setItemValue(prefix);
+		constantItem.setItemLength(prefix.length());
+		codeItemDtos.add(constantItem);
+
+		CodeItemDto timeItem = new CodeItemDto();
+		timeItem.setItemType(ItemTypeEnum.TIME.getType());
+		timeItem.setOrderNum(2);
+		timeItem.setItemLength(8);
+		timeItem.setItemValue(Constants.PLATFORM_DEFAULT_METADATA_SYSTEM_TIME);
+		codeItemDtos.add(timeItem);
+
+		CodeItemDto serialItem = new CodeItemDto();
+		serialItem.setItemType(ItemTypeEnum.SERIAL.getType());
+		serialItem.setOrderNum(3);
+		serialItem.setItemLength(6);
+		serialItem.setItemValue("999999");
+		codeItemDtos.add(serialItem);
+
+		return codeRule;
 	}
 }

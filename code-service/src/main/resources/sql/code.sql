@@ -20,7 +20,6 @@ insert into base_code_biz_type
 values
 (1,1,'BASE','编码规则编码','BASE_CODE_RULE_CODE',2,1,unix_timestamp(now()));
 
-
 -- 2 编码业务类型元数据
 DROP TABLE IF EXISTS `base_code_biz_type_metadata`;
 CREATE TABLE `base_code_biz_type_metadata` (

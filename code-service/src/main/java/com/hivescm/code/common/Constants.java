@@ -23,6 +23,29 @@ public class Constants {
 	public static final int PLATFORM_GROUP_ID = 1;
 
 	/**
+	 * 无业务单元组织ID
+	 */
+	public static final int NO_ORG_ID = 0;
+
+	/**
+	 * 为编码业务类型默认生成的编码规则名称，在原业务类型名称后追加后缀
+	 */
+	public static final String PLATFORM_DEFAULT_CODE_PREFIX_SHOW = "(平台默认)";
+	public static final String PLATFORM_DEFAULT_CODE_PREFIX = "PTMR";
+
+	/**
+	 * 平台默认添加的业务类型元数据（系统时间）
+	 */
+	public static final String PLATFORM_DEFAULT_METADATA_SYSTEM_TIME = "systemTime";
+	public static final String PLATFORM_DEFAULT_METADATA_SYSTEM_TIME_SHOW_NAME = "系统时间";
+
+	/**
+	 * 平台默认添加的业务类型元数据（编码前缀）
+	 */
+	public static final String PLATFORM_DEFAULT_METADATA_CODE_PREFIX = "codePrefix";
+	public static final String PLATFORM_DEFAULT_METADATA_CODE_PREFIX_SHOW_NAME = "编码前缀";
+
+	/**
 	 * 编码规则编码，业务编码
 	 */
 	public static final String CODE_RULE_CODE_BIZ_CODE = "BASE_CODE_RULE_CODE";

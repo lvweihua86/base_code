@@ -2,6 +2,7 @@ package com.hivescm.code.utils;
 
 import com.hivescm.code.enums.DateFormateEnum;
 
+import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -31,20 +32,18 @@ public class DateUtil {
 	/**
 	 * 格式化时间
 	 *
-	 * @param date    时间
+	 * @param strDate 时间
 	 * @param formate 格式
 	 * @return 指定格式的时间字符
 	 */
-	public static final String formateDate(Date date, String formate) {
-		if (date == null) {
+	public static final String formateDate(String strDate, String formate) throws Exception {
+		if (strDate == null) {
 			return null;
 		}
 
 		// 校验时间格式
 		DateFormateEnum.getDateFormateEnum(formate);
-
 		SimpleDateFormat sdf = new SimpleDateFormat(formate);
-		final String formatDate = sdf.format(date);
-		return formatDate;
+		return sdf.format(sdf.parse(strDate));
 	}
 }

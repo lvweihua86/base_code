@@ -1,10 +1,8 @@
 package com.hivescm.code.validator;
 
-import com.hivescm.code.common.Constants;
 import com.hivescm.code.dto.CodeItemDto;
 import com.hivescm.code.dto.CodeRuleDto;
 import com.hivescm.code.enums.ItemTypeEnum;
-import com.hivescm.code.enums.LevelEnum;
 import com.hivescm.code.exception.CodeErrorCode;
 import com.hivescm.code.exception.CodeException;
 import com.hivescm.code.utils.NumberUtil;
@@ -105,7 +103,7 @@ public class AddCodeRuleValidator {
 			}
 
 			final Integer itemLength = codeItem.getItemLength();
-			if (NumberUtil.nullOrlessThanOrEqualToZero(itemLength)) {
+			if (NumberUtil.nullOrlessThanOrEqualToZero(itemLength) || itemLength > 10) {
 				LOGGER.warn("add code rule item req ilegall param,[itemLength]={}.", itemLength);
 				throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "新增编码项,非法请求参数【itemLength】");
 			}

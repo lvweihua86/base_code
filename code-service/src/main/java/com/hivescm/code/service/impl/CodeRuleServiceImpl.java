@@ -81,6 +81,7 @@ public class CodeRuleServiceImpl implements CodeRuleService {
 			throw new CodeException(CodeErrorCode.DATE_CONFLIC_ERROR_CODE, "集团内编码名称重复");
 		}
 
+		// 若当前为默认的需要更新，其它的为非默认状态
 		if (codeRuleDto.getDefaulted() == BooleanEnum.TRUE.getTruth()) {
 			codeRuleMapper.updateOtherNoDefault(codeRuleDto.getGroupId(), codeRuleDto.getBizCode());
 		}
@@ -192,12 +193,18 @@ public class CodeRuleServiceImpl implements CodeRuleService {
 		if (BooleanEnum.FALSE.getTruth() == defaulted) {
 			return;
 		}
+		final Integer groupId = codeRule.getGroupId();
+		final String bizCode = codeRule.getBizCode();
+		// 变更其它的为非默认状态
+		ruleItemRelationMapper
+				.updateOrgRelationDefaultState(groupId, Constants.NO_ORG_ID, bizCode, BooleanEnum.FALSE.getTruth());
 
+		// 新增默认绑定关系
 		RuleItemRelationBean relationBean = new RuleItemRelationBean();
 		relationBean.setRuleId(codeRule.getId());
-		relationBean.setGroupId(codeRule.getGroupId());
-		relationBean.setOrgId(0);
-		relationBean.setBizCode(codeRule.getBizCode());
+		relationBean.setGroupId(groupId);
+		relationBean.setOrgId(Constants.NO_ORG_ID);
+		relationBean.setBizCode(bizCode);
 		relationBean.setDefaulted(BooleanEnum.TRUE.getTruth());
 		relationBean.setStepNum(Constants.CACHE_SERIAL_NUM_DEFAULT_STEP_NUM);
 		relationBean.setStepSize(Constants.CACHE_SERIAL_NUM_DEFAULT_STEP_SIZE);
@@ -316,7 +323,6 @@ public class CodeRuleServiceImpl implements CodeRuleService {
 			nextCodeItem.setOrderNum(orderNum);
 			orderNum++;
 		}
-
 		return new ArrayList<>(codeItemsTree);
 	}
 }

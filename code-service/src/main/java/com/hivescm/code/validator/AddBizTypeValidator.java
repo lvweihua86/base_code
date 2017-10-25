@@ -64,6 +64,14 @@ public class AddBizTypeValidator {
 			throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "新增业务类型,非法请求参数【bizCode】");
 		}
 
+		final String customPrefix = reqParam.getCustomPrefix();
+		if (!StringUtils.isEmpty(customPrefix)) {
+			if (customPrefix.length() > 10) {
+				LOGGER.warn("add biz type req ilegall param,[customPrefix]={}.", customPrefix);
+				throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "新增业务类型,非法请求参数【customPrefix】");
+			}
+		}
+
 		final List<BizTypeMetadataDto> metadatas = reqParam.getMetadatas();
 		bizTypeMeatadataValidate(metadatas);
 

@@ -42,8 +42,8 @@ public interface IBizTypeDoc {
 	 * @return 业务类型集合
 	 */
 	@ApiOperation(value = "业务类型简要信息查询", httpMethod = "POST")
-	@RequestMapping(value = "queryAllAavailableBizTypes", method = RequestMethod.POST)
-	DataResult<List<BizTypeInfoDto>> queryAllAavailableBizTypes(@RequestBody BizTypeQueryDto reqParam);
+	@RequestMapping(value = "queryAllBizTypes", method = RequestMethod.POST)
+	DataResult<List<BizTypeInfoDto>> queryAllBizTypes(@RequestBody BizTypeQueryDto reqParam);
 
 	/**
 	 * 删除业务类型
