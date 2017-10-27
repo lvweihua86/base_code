@@ -34,14 +34,14 @@
     </delete>
 
     <!--根据业务类型ID查询业务类型-->
-    <select id="queryBizTypeById" parameterType="integer" resultType="com.hivescm.code.bean.BizTypeInfoBean">
+    <select id="queryBizTypeById"  resultType="com.hivescm.code.bean.BizTypeInfoBean">
         select
         id as id,
         type_level as typeLevel,
         system_name as systemName,
         biz_name as bizName,
         biz_code as bizCode
-        from base_code_biz_type WHERE id = #{id}
+        from base_code_biz_type WHERE id = #{id} or biz_code=#{bizCode}
     </select>
 
     <!--根据业务类型编码查询业务类型-->

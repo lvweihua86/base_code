@@ -18,13 +18,17 @@ import java.io.Serializable;
 public class KeyOperateDto implements Serializable {
 	private static final long serialVersionUID = 1L;
 	/**
-	 * 用户ID
+	 * 用户ID（可空）
 	 */
 	private Integer userId;
 	/**
 	 * 数据ID
 	 */
 	private Integer dataId;
+	/**
+	 * 临时添加，便于操作
+	 */
+	private String bizCode;
 
 	public KeyOperateDto() {
 	}
@@ -45,11 +49,20 @@ public class KeyOperateDto implements Serializable {
 		this.dataId = dataId;
 	}
 
+	public String getBizCode() {
+		return bizCode;
+	}
+
+	public void setBizCode(String bizCode) {
+		this.bizCode = bizCode;
+	}
+
 	@Override
 	public String toString() {
 		final StringBuilder sb = new StringBuilder("DeleteOperateDto{");
 		sb.append("userId=").append(userId);
 		sb.append(", dataId=").append(dataId);
+		sb.append(", bizCode=").append(bizCode);
 		sb.append('}');
 		return sb.toString();
 	}

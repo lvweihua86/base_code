@@ -108,10 +108,11 @@ public class BizTypeServiceImpl implements BizTypeService {
 	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
 	public void deleteBizType(KeyOperateDto reqParam) {
 		final Integer bizTypeId = reqParam.getDataId();
-		final BizTypeInfoBean bizTypeInfoBean = bizTypeMapper.queryBizTypeById(bizTypeId);
+		final String bizCode1 = reqParam.getBizCode();
+		final BizTypeInfoBean bizTypeInfoBean = bizTypeMapper.queryBizTypeById(bizTypeId,bizCode1);
 		if (null == bizTypeInfoBean) {
 			LOGGER.info("delete biz type not exist,param:{}.", reqParam);
-			throw new CodeException(CodeErrorCode.DATE_CONFLIC_ERROR_CODE, "业务类型编码重复");
+			throw new CodeException(CodeErrorCode.DATE_CONFLIC_ERROR_CODE, "业务类型不存在");
 		}
 
 		// 物理删除当前业务类型

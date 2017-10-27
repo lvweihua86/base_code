@@ -42,7 +42,7 @@ public interface BizTypeMapper {
 	 * @param id 业务类型ID
 	 * @return 业务类型检验信息
 	 */
-	BizTypeInfoBean queryBizTypeById(@Param("id") Integer id);
+	BizTypeInfoBean queryBizTypeById(@Param("id") Integer id,@Param("bizCode") String bizCode);
 
 	/**
 	 * 根据业务类型编码查询业务类型
