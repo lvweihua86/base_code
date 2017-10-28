@@ -31,7 +31,7 @@ public class Swagger2 {
 	private String basePackage ;
 	@Bean
 	public Docket createRestApi() {
-		LOGGER.info("Swagger2信息: enable.swagger=" + enableSwagger+"; base.package.swagger="+basePackage);
+		LOGGER.info("enable.swagger=" + enableSwagger+"; base.package.swagger="+basePackage);
 		return new Docket(DocumentationType.SWAGGER_2)//
 				.enable(enableSwagger)//
 				.apiInfo(apiInfo()).select()//
@@ -40,8 +40,8 @@ public class Swagger2 {
 	}
 
 	private ApiInfo apiInfo() {
-		return new ApiInfoBuilder().title("generatedCodeId-server系统的服务API文档")//
-				.description("generatedCodeId-server系统的服务API文档")//
+		return new ApiInfoBuilder().title("code-server API文档")//
+				.description("code-server API文档")//
 				.termsOfServiceUrl("")//
 				.version("1.0").build();
 	}
