@@ -31,7 +31,7 @@ public class SerialNumIncrTask implements Runnable {
 	private static final Logger LOGGER = LoggerFactory.getLogger(SerialNumIncrTask.class);
 
 	private static ThreadPoolExecutor executor = new ThreadPoolExecutor(1, Runtime.getRuntime().availableProcessors(), 10,
-			TimeUnit.SECONDS, new ArrayBlockingQueue<>(20));
+			TimeUnit.SECONDS, new ArrayBlockingQueue<>(50));
 
 	/**
 	 * Redis 缓存信息
@@ -57,7 +57,6 @@ public class SerialNumIncrTask implements Runnable {
 		final long cacheMaxSerialNum = Long.valueOf(jedisClient.get(maxSerialNumKey));
 		final long cacheSerialNum = Long.valueOf(jedisClient.get(cacheData.getSerialNumKey()));
 		if (reachThresholdValue(cacheMaxSerialNum, cacheSerialNum)) {
-
 			final RuleItemRelationBean relationBean = ruleItemRelationMapper
 					.queryDefaultBandingRuleLock(cacheData.getGroupId(), cacheData.getOrgId(), cacheData.getBizCode());
 
@@ -67,7 +66,6 @@ public class SerialNumIncrTask implements Runnable {
 			}
 
 			ruleItemRelationMapper.incrCacheStepNum(relationBean.getId(), 1);
-
 			jedisClient.incr(maxSerialNumKey, Constants.CACHE_SERIAL_NUM_DEFAULT_STEP_SIZE);
 		}
 	}
@@ -88,8 +86,8 @@ public class SerialNumIncrTask implements Runnable {
 	 * @param cacheMaxSerialNum 当前缓存最大流水号
 	 * @return <code>true</code> 到达阈值；<code>true</code> 未到阈值；
 	 */
-	private boolean reachThresholdValue(final long cacheMaxSerialNum, final long cacheSerialNum) {
-		// 没缓存的一步新增了多少
+	public static boolean reachThresholdValue(final long cacheMaxSerialNum, final long cacheSerialNum) {
+		// 每缓存的一步新增了多少
 		double incrByStep = cacheSerialNum % Constants.CACHE_SERIAL_NUM_DEFAULT_STEP_SIZE + 0.0;
 		double cacheThreshold = incrByStep / Constants.CACHE_SERIAL_NUM_DEFAULT_STEP_SIZE;
 		if (cacheThreshold >= Constants.CACHE_SERIAL_NUM_THRESHOLD_VALUE) {

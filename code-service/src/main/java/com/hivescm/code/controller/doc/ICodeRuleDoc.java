@@ -27,7 +27,7 @@ public interface ICodeRuleDoc {
 
 	@ApiOperation(value = "新增编码规则", httpMethod = "POST")
 	@RequestMapping(value = "/addCodeRule", method = RequestMethod.POST)
-	DataResult addCodeRule(@RequestBody CodeRuleDto codeRuleDto);
+	DataResult<Boolean> addCodeRule(@RequestBody CodeRuleDto codeRuleDto);
 
 	@ApiOperation(value = "分配编码规则", httpMethod = "POST")
 	@RequestMapping(value = "/allocateCodeRule", method = RequestMethod.POST)

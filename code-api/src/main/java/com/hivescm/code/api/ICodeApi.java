@@ -1,6 +1,7 @@
 package com.hivescm.code.api;
 
 import com.hivescm.code.dto.CodeResult;
+import com.hivescm.code.dto.CodeRuleDto;
 import com.hivescm.code.dto.GenerateCode;
 import com.hivescm.code.dto.RecycleCode;
 import com.hivescm.common.domain.DataResult;
@@ -29,4 +30,13 @@ public interface ICodeApi {
 	 */
 	@RequestMapping(value = "/recycleCode", method = RequestMethod.POST)
 	DataResult<Boolean> recycleCode(@RequestBody RecycleCode reqParam);
+
+	/**
+	 * 初始化编码规则
+	 *
+	 * @param codeRuleDto 编码规则
+	 * @return
+	 */
+	@RequestMapping(value = "/addCodeRule", method = RequestMethod.POST)
+	DataResult<Boolean> initCodeRule(@RequestBody CodeRuleDto codeRuleDto);
 }
