@@ -160,7 +160,6 @@ public class RedisCodeCache {
 			redisSerialNumKey = Constants.PLATFORM_CODE_SERIAL_NUM_REDIS_PREFIX + bizCode;
 			redisMaxSerialNumKey = Constants.PLATFORM_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + bizCode;
 		} else {
-
 			redisTemplateKey = Constants.GROUP_CODE_TEMPLATE_REDIS_PREFIX + groupId + ":" + bizCode;
 			redisSerialNumKey = Constants.GROUP_CODE_SERIAL_NUM_REDIS_PREFIX + groupId + ":"+ bizCode;
 			redisMaxSerialNumKey = Constants.GROUP_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + groupId + ":" + bizCode;
