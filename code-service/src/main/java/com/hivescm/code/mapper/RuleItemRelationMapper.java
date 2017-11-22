@@ -19,7 +19,7 @@ import java.util.List;
  * @version 1.0
  * @since JDK 1.8
  */
-@DataSourceRouting(dataSource = "generated", isReadWriteSplitting = false, table = "base_code_rule_item_relation")
+@DataSourceRouting(dataSource = "generated", isReadWriteSplitting = false, table = "base_code_rule_org_relation")
 public interface RuleItemRelationMapper {
 	/**
 	 * 新增绑定关系
