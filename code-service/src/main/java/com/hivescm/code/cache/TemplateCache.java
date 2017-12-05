@@ -74,7 +74,7 @@ public class TemplateCache {
 		// 获取 Redis 编码模板缓存
 		final String bizCode = reqParam.getBizCode();
 		final Integer groupId = reqParam.getGroupId();
-		if (Constants.PLATFORM_GROUP_ID == groupId) {
+		if (groupId != null && Constants.PLATFORM_GROUP_ID == groupId) {
 			// 若集团ID为1，即取平台级的编码编码规则
 			return getPlatFormCache(bizCode);
 		}
