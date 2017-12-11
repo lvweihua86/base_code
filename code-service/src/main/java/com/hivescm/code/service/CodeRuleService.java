@@ -2,6 +2,7 @@ package com.hivescm.code.service;
 
 import com.hivescm.code.dto.AllocateCodeRuleDto;
 import com.hivescm.code.dto.CodeRuleDto;
+
 /**
  * <b>Description:</b><br>
  * 编码规则服务 <br><br>
@@ -17,13 +18,15 @@ import com.hivescm.code.dto.CodeRuleDto;
  */
 public interface CodeRuleService {
 
-	/**
-	 * 新增编码规则
-	 *
-	 * @param codeRuleDto 编码规则
-	 * @return
-	 */
-	void addCodeRule(CodeRuleDto codeRuleDto);
+    /**
+     * 新增编码规则
+     *
+     * @param codeRuleDto 编码规则
+     * @return
+     */
+    void addCodeRule(CodeRuleDto codeRuleDto);
 
-	void allocateCodeRule(AllocateCodeRuleDto allocateCodeRuleDto);
+    void allocateCodeRule(AllocateCodeRuleDto allocateCodeRuleDto);
+
+    boolean codeRuleExist(String ruleName, int groupId);
 }

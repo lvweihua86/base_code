@@ -49,7 +49,7 @@
     </update>
 
     <select id="queryConflicRuleName" resultType="com.hivescm.code.bean.CodeRuleInfoBean">
-        select id from base_code_rule where group_id in(1, #{groupId}) and rule_name=#{ruleName} limit 1
+        select * from base_code_rule where group_id in(1, #{groupId}) and rule_name=#{ruleName} limit 1
     </select>
 
     <!--依据业务编码删除编码规则-->

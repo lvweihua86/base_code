@@ -23,59 +23,60 @@ import java.util.List;
 @DataSourceRouting(dataSource = "generated", isReadWriteSplitting = false, table = "base_code_rule")
 public interface CodeRuleMapper {
 
-	/**
-	 * 新增编码规则
-	 *
-	 * @param bean 编码规则实体数据
-	 * @return 编码规则自增ID
-	 */
-	int addCodeRule(@Param(value = "bean") CodeRuleBean bean);
+    /**
+     * 新增编码规则
+     *
+     * @param bean 编码规则实体数据
+     * @return 编码规则自增ID
+     */
+    int addCodeRule(@Param(value = "bean") CodeRuleBean bean);
 
-	/**
-	 * 更新其它为非默认状态
-	 *
-	 * @param groupId 集团ID（平台为1）
-	 * @param bizCode 业务编码
-	 */
-	void updateOtherNoDefault(@Param(value = "groupId") Integer groupId, @Param(value = "bizCode") String bizCode);
+    /**
+     * 更新其它为非默认状态
+     *
+     * @param groupId 集团ID（平台为1）
+     * @param bizCode 业务编码
+     */
+    void updateOtherNoDefault(@Param(value = "groupId") Integer groupId, @Param(value = "bizCode") String bizCode);
 
-	/**
-	 * 更新其它为非默认状态
-	 *
-	 * @param groupId 集团ID（平台为1）
-	 * @param ruleName 规则名字
-	 */
-	CodeRuleInfoBean queryConflicRuleName(@Param(value = "groupId") Integer groupId, @Param(value = "ruleName") String ruleName);
+    /**
+     * 更新其它为非默认状态
+     *
+     * @param groupId  集团ID（平台为1）
+     * @param ruleName 规则名字
+     */
+    CodeRuleInfoBean queryConflicRuleName(@Param(value = "groupId") Integer groupId, @Param(value = "ruleName")
+            String ruleName);
 
-	/**
-	 * 根据业务编码查询编码规则（锁）
-	 *
-	 * @param bizCode 业务编码
-	 * @return 编码规则
-	 */
-	CodeRuleBean queryDefaultedRuleByBizCodeLock(@Param(value = "bizCode") String bizCode,
-			@Param(value = "groupId") Integer groupId);
+    /**
+     * 根据业务编码查询编码规则（锁）
+     *
+     * @param bizCode 业务编码
+     * @return 编码规则
+     */
+    CodeRuleBean queryDefaultedRuleByBizCodeLock(@Param(value = "bizCode") String bizCode,
+                                                 @Param(value = "groupId") Integer groupId);
 
-	/**
-	 * 根据规则ID查询编码规则（锁）
-	 *
-	 * @param id 规则ID
-	 * @return 编码规则
-	 */
-	CodeRuleBean queryRuleByIdLock(@Param(value = "id") Integer id);
+    /**
+     * 根据规则ID查询编码规则（锁）
+     *
+     * @param id 规则ID
+     * @return 编码规则
+     */
+    CodeRuleBean queryRuleByIdLock(@Param(value = "id") Integer id);
 
-	/**
-	 * 依据业务编码删除编码规则
-	 *
-	 * @param ruleIds 规则ID集合
-	 */
-	void deleteByIds(@Param(value = "ruleIds") List<Integer> ruleIds);
+    /**
+     * 依据业务编码删除编码规则
+     *
+     * @param ruleIds 规则ID集合
+     */
+    void deleteByIds(@Param(value = "ruleIds") List<Integer> ruleIds);
 
-	/**
-	 * 根据业务编码查询编码规则ID集合
-	 *
-	 * @param bizCode 业务编码
-	 * @return
-	 */
-	List<Integer> queryRuleIdsByBizCode(@Param(value = "bizCode") String bizCode);
+    /**
+     * 根据业务编码查询编码规则ID集合
+     *
+     * @param bizCode 业务编码
+     * @return
+     */
+    List<Integer> queryRuleIdsByBizCode(@Param(value = "bizCode") String bizCode);
 }

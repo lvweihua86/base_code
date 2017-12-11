@@ -8,6 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * <b>Description:</b><br>
@@ -25,11 +26,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Api(value = "编码规则")
 public interface ICodeRuleDoc {
 
-	@ApiOperation(value = "新增编码规则", httpMethod = "POST")
-	@RequestMapping(value = "/addCodeRule", method = RequestMethod.POST)
-	DataResult<Boolean> addCodeRule(@RequestBody CodeRuleDto codeRuleDto);
+    @ApiOperation(value = "新增编码规则", httpMethod = "POST")
+    @RequestMapping(value = "/addCodeRule", method = RequestMethod.POST)
+    DataResult<Boolean> addCodeRule(@RequestBody CodeRuleDto codeRuleDto);
 
-	@ApiOperation(value = "分配编码规则", httpMethod = "POST")
-	@RequestMapping(value = "/allocateCodeRule", method = RequestMethod.POST)
-	DataResult<Boolean> allocateCodeRule(@RequestBody AllocateCodeRuleDto reqParam);
+    @ApiOperation(value = "分配编码规则", httpMethod = "POST")
+    @RequestMapping(value = "/allocateCodeRule", method = RequestMethod.POST)
+    DataResult<Boolean> allocateCodeRule(@RequestBody AllocateCodeRuleDto reqParam);
+
+    @ApiOperation(value = "判断编码规则是否存在", httpMethod = "POST")
+    @RequestMapping(value = "/codeRuleExist", method = RequestMethod.POST)
+    DataResult<Boolean> codeRuleExist(@RequestParam("ruleName") String ruleName,
+                                      @RequestParam("groupId") String groupId);
 }
