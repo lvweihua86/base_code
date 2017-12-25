@@ -1,6 +1,7 @@
 package com.hivescm.code.dto;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -14,72 +15,72 @@ import java.util.Map;
  * @author DongChunfu
  */
 public class GenerateCode implements Serializable {
-	private static final long serialVersionUID = 1L;
-	/**
-	 * 集团ID（选填）（平台为1）
-	 */
-	private Integer groupId;
-	/**
-	 * 组织ID（选填）
-	 */
-	private Integer orgId;
-	/**
-	 * 业务编码（必填）
-	 */
-	private String bizCode;
+    private static final long serialVersionUID = 1L;
+    /**
+     * 集团ID（选填）（平台为1）
+     */
+    private Integer groupId;
+    /**
+     * 组织ID（选填）
+     */
+    private Integer orgId;
+    /**
+     * 业务编码（必填）
+     */
+    private String bizCode;
 
-	/**
-	 * 业务实体可能参与编码的字符类型域
-	 * 业务实体列表存储的 field_name 为必填，
-	 * 当取对应值时返回指定错误码，客户端自行处理；
-	 * <p>
-	 * 时间类型的格式为：yyyyMMdd（没有什么字符串是解决不了的）
-	 */
-	private Map<String, String> bizAttr = new HashMap<>(10, 1);
+    /**
+     * 业务实体可能参与编码的字符类型域
+     * 业务实体列表存储的 field_name 为必填，
+     * 当取对应值时返回指定错误码，客户端自行处理；
+     * <p>
+     * 时间类型的格式为：yyyyMMdd（没有什么字符串是解决不了的）
+     */
+    private Map<String, String> bizAttr = new HashMap<>(10, 1);
 
-	public GenerateCode() {
-	}
+    public GenerateCode() {
+    }
 
-	public Integer getGroupId() {
-		return groupId;
-	}
+    public Integer getGroupId() {
+        return groupId;
+    }
 
-	public void setGroupId(Integer groupId) {
-		this.groupId = groupId;
-	}
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
+    }
 
-	public Integer getOrgId() {
-		return orgId;
-	}
+    public Integer getOrgId() {
+        return orgId;
+    }
 
-	public void setOrgId(Integer orgId) {
-		this.orgId = orgId;
-	}
+    public void setOrgId(Integer orgId) {
+        this.orgId = orgId;
+    }
 
-	public String getBizCode() {
-		return bizCode;
-	}
+    public String getBizCode() {
+        return bizCode;
+    }
 
-	public void setBizCode(String bizCode) {
-		this.bizCode = bizCode;
-	}
+    public void setBizCode(String bizCode) {
+        this.bizCode = bizCode;
+    }
 
-	public Map<String, String> getBizAttr() {
-		return bizAttr;
-	}
+    public Map<String, String> getBizAttr() {
+        return bizAttr == null ? Collections.emptyMap() : bizAttr;
+    }
 
-	public void setBizAttr(Map<String, String> bizAttr) {
-		this.bizAttr = bizAttr;
-	}
+    public void setBizAttr(Map<String, String> bizAttr) {
+        this.bizAttr = bizAttr;
+    }
 
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder("GenerateCode{");
-		sb.append("groupId=").append(groupId);
-		sb.append(", orgId=").append(orgId);
-		sb.append(", bizCode='").append(bizCode).append('\'');
-		sb.append(", bizAttr=").append(bizAttr);
-		sb.append('}');
-		return sb.toString();
-	}
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("GenerateCode{");
+        sb.append("groupId=").append(groupId);
+        sb.append(", orgId=").append(orgId);
+        sb.append(", bizCode='").append(bizCode).append('\'');
+        sb.append(", bizAttr=").append(bizAttr);
+        sb.append('}');
+        return sb.toString();
+    }
 }
