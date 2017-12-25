@@ -156,6 +156,7 @@ public class CodeServiceImpl implements CodeService {
 		final String stringItemValue = StringUtils
 				.coverLength(codeItem.getItemLength(), CutWayEnum.CUT_RIGHT, attrValue, "0", CoverWayEnum.NO);
 		codeBuilder.append(stringItemValue);
+
 	}
 
 	/**
