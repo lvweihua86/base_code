@@ -66,16 +66,13 @@
                                 <phase>compile</phase>
                                 <configuration>
                                     <tasks>
-                                        <copy todir="${basedir}/target/classes/"
-                                              overwrite="true">
-                                            <fileset
-                                                    dir="${basedir}/src/main/resources/test/"/>
+                                        <copy todir="${basedir}/target/classes/" overwrite="true">
+                                            <fileset dir="${basedir}/src/main/resources/test/"/>
                                         </copy>
                                         <delete dir="${basedir}/target/classes/product/"></delete>
                                         <delete dir="${basedir}/target/classes/test/"></delete>
+                                        <delete dir="${basedir}/target/classes/dev/"></delete>
                                         <delete dir="${basedir}/target/classes/doc/"></delete>
-                                        <delete
-                                                file="${basedir}/target/classes/com/hivescm/generated/startup/Swagger2.class"/>
                                     </tasks>
                                 </configuration>
                                 <goals>
@@ -106,10 +103,10 @@
                                         <copy todir="${basedir}/target/classes/" overwrite="true">
                                             <fileset dir="${basedir}/src/main/resources/product/"/>
                                         </copy>
-                                        <delete dir="${basedir}/target/classes/dev/"></delete>
+                                        <delete dir="${basedir}/target/classes/product/"></delete>
                                         <delete dir="${basedir}/target/classes/test/"></delete>
+                                        <delete dir="${basedir}/target/classes/dev/"></delete>
                                         <delete dir="${basedir}/target/classes/doc/"></delete>
-                                        <delete file="${basedir}/target/classes/com/hivescm/generated/startup/Swagger2.class"/>
                                     </tasks>
                                 </configuration>
                                 <goals>
@@ -137,13 +134,12 @@
                                 <phase>compile</phase>
                                 <configuration>
                                     <tasks>
-                                        <copy todir="${basedir}/target/classes/"
-                                              overwrite="true">
-                                            <fileset
-                                                    dir="${basedir}/src/main/resources/doc/"/>
+                                        <copy todir="${basedir}/target/classes/" overwrite="true">
+                                            <fileset dir="${basedir}/src/main/resources/doc/"/>
                                         </copy>
                                         <delete dir="${basedir}/target/classes/product/"></delete>
                                         <delete dir="${basedir}/target/classes/test/"></delete>
+                                        <delete dir="${basedir}/target/classes/dev/"></delete>
                                         <delete dir="${basedir}/target/classes/doc/"></delete>
                                     </tasks>
                                 </configuration>
