@@ -1,6 +1,7 @@
 package com.hivescm.code.cache;
 
 import com.google.gson.Gson;
+import com.hivescm.code.common.Constants;
 
 /**
  * <b>Description:</b><br>
@@ -16,148 +17,224 @@ import com.google.gson.Gson;
  * @since JDK 1.8
  */
 public class CodeCacheDataInfo {
-	private static final Gson GSON = new Gson();
-	/**
-	 * 是否有缓存
-	 */
-	private boolean hasCache;
+    private static final Gson GSON = new Gson();
+    /**
+     * 是否有缓存
+     */
+    private boolean hasCache;
 
-	/**
-	 * 集团ID
-	 */
-	private Integer groupId;
-	/**
-	 * 组织ID
-	 */
-	private Integer orgId;
-	/**
-	 * 业务编码
-	 */
-	private String bizCode;
+    /**
+     * 集团ID
+     */
+    private Integer groupId;
+    /**
+     * 组织ID
+     */
+    private Integer orgId;
+    /**
+     * 业务编码
+     */
+    private String bizCode;
 
-	/**
-	 * 编码模板
-	 */
-	private String cacheTemplate;
+    /**
+     * 编码模板
+     */
+    private String cacheTemplate;
 
-	/**
-	 * 规则缓存
-	 */
-	private TemplateCacheData templateData;
+    /**
+     * 规则缓存
+     */
+    private TemplateCacheData templateData;
 
-	/**
-	 * 流水号缓存Key
-	 */
-	private String serialNumKey;
+    /**
+     * 流水号缓存Key
+     */
+    private String serialNumKey;
 
-	/**
-	 * 最大流水号Key
-	 */
-	private String maxSerialNumKey;
+    /**
+     * 最大流水号Key
+     */
+    private String maxSerialNumKey;
 
-	public CodeCacheDataInfo() {
-	}
+    public CodeCacheDataInfo() {
+    }
 
-	public boolean hasCache() {
-		return hasCache;
-	}
+    /**
+     * 创建平台级缓存
+     */
+    public static CodeCacheDataInfo newPlatformCache(String bizCode, String cacheTemplate,
+                                                     TemplateCacheData templateData, String serialNumKey,
+                                                     String maxSerialNumKey) {
+        return new CodeCacheDataInfo(true, Constants.PLATFORM_GROUP_ID, Constants.NO_ORG_ID, bizCode, cacheTemplate,
+                templateData, serialNumKey, maxSerialNumKey);
+    }
 
-	public void setHasCache(boolean hasCache) {
-		this.hasCache = hasCache;
-	}
+    /**
+     * 创建平台级缓存
+     */
+    public static CodeCacheDataInfo newPlatformCache(String bizCode, String cacheTemplate, String serialNumKey,
+                                                     String maxSerialNumKey) {
+        return newPlatformCache(bizCode, cacheTemplate, null, serialNumKey, maxSerialNumKey);
+    }
 
-	/**
-	 * 改写get();确保后续取值时为空
-	 *
-	 * @return 缓存模板json数据
-	 */
-	public String getCacheTemplate() {
-		if (cacheTemplate != null) {
-			return cacheTemplate;
-		}
+    /**
+     * 创建集团级缓存
+     */
+    public static CodeCacheDataInfo newGroupCache(Integer groupId, String bizCode, String cacheTemplate,
+                                                  TemplateCacheData templateData, String serialNumKey,
+                                                  String maxSerialNumKey) {
+        return new CodeCacheDataInfo(true, groupId, 0, bizCode, cacheTemplate, templateData, serialNumKey,
+                maxSerialNumKey);
+    }
 
-		if (templateData != null) {
-			return GSON.toJson(templateData);
-		}
-		return null;
-	}
+    /**
+     * 创建集团级缓存
+     */
+    public static CodeCacheDataInfo newGroupCache(Integer groupId, String bizCode, String cacheTemplate,
+                                                  String serialNumKey, String maxSerialNumKey) {
+        return newGroupCache(groupId, bizCode, cacheTemplate, null, serialNumKey, maxSerialNumKey);
+    }
 
-	public void setCacheTemplate(String cacheTemplate) {
-		this.cacheTemplate = cacheTemplate;
-	}
+    /**
+     * 创建业务单元级缓存
+     */
+    public static CodeCacheDataInfo newOrgCache(Integer groupId, Integer orgId, String bizCode, String cacheTemplate,
+                                                TemplateCacheData templateData, String serialNumKey,
+                                                String maxSerialNumKey) {
+        return new CodeCacheDataInfo(true, groupId, orgId, bizCode, cacheTemplate, templateData, serialNumKey,
+                maxSerialNumKey);
+    }
 
-	/**
-	 * 改写get();确保后续取值时不为空
-	 *
-	 * @return 缓存模板实体数据
-	 */
-	public TemplateCacheData getTemplateData() {
-		if (templateData != null) {
-			return templateData;
-		}
+    /**
+     * 创建业务单元级缓存
+     */
+    public static CodeCacheDataInfo newOrgCache(Integer groupId, Integer orgId, String bizCode, String cacheTemplate,
+                                                String serialNumKey, String maxSerialNumKey) {
+        return newOrgCache(groupId, orgId, bizCode, cacheTemplate, null, serialNumKey, maxSerialNumKey);
+    }
 
-		if (cacheTemplate != null) {
-			return GSON.fromJson(cacheTemplate, TemplateCacheData.class);
-		}
-		return null;
-	}
+    /**
+     * 创建缓存
+     */
+    public static CodeCacheDataInfo newCache(Integer groupId, String bizCode, String cacheTemplate,
+                                             TemplateCacheData templateData, String serialNumKey,
+                                             String maxSerialNumKey) {
+        return new CodeCacheDataInfo(true, groupId, 0, bizCode, cacheTemplate, templateData, serialNumKey,
+                maxSerialNumKey);
+    }
 
-	public Integer getGroupId() {
-		return groupId;
-	}
+    private CodeCacheDataInfo(boolean hasCache, Integer groupId, Integer orgId, String bizCode, String cacheTemplate,
+                              TemplateCacheData templateData, String serialNumKey, String maxSerialNumKey) {
+        this.hasCache = hasCache;
+        this.groupId = groupId;
+        this.orgId = orgId;
+        this.bizCode = bizCode;
+        this.cacheTemplate = cacheTemplate;
+        this.templateData = templateData;
+        this.serialNumKey = serialNumKey;
+        this.maxSerialNumKey = maxSerialNumKey;
+    }
 
-	public void setGroupId(Integer groupId) {
-		this.groupId = groupId;
-	}
+    public boolean hasCache() {
+        return hasCache;
+    }
 
-	public Integer getOrgId() {
-		return orgId;
-	}
+    public void setHasCache(boolean hasCache) {
+        this.hasCache = hasCache;
+    }
 
-	public void setOrgId(Integer orgId) {
-		this.orgId = orgId;
-	}
+    /**
+     * 改写get();确保后续取值时为空
+     *
+     * @return 缓存模板json数据
+     */
+    public String getCacheTemplate() {
+        if (cacheTemplate != null) {
+            return cacheTemplate;
+        }
 
-	public String getBizCode() {
-		return bizCode;
-	}
+        if (templateData != null) {
+            return GSON.toJson(templateData);
+        }
+        return null;
+    }
 
-	public void setBizCode(String bizCode) {
-		this.bizCode = bizCode;
-	}
+    public void setCacheTemplate(String cacheTemplate) {
+        this.cacheTemplate = cacheTemplate;
+    }
 
-	public void setTemplateData(TemplateCacheData templateData) {
-		this.templateData = templateData;
-	}
+    /**
+     * 改写get();确保后续取值时不为空
+     *
+     * @return 缓存模板实体数据
+     */
+    public TemplateCacheData getTemplateData() {
+        if (templateData != null) {
+            return templateData;
+        }
 
-	public String getSerialNumKey() {
-		return serialNumKey;
-	}
+        if (cacheTemplate != null) {
+            return GSON.fromJson(cacheTemplate, TemplateCacheData.class);
+        }
+        return null;
+    }
 
-	public void setSerialNumKey(String serialNumKey) {
-		this.serialNumKey = serialNumKey;
-	}
+    public Integer getGroupId() {
+        return groupId;
+    }
 
-	public String getMaxSerialNumKey() {
-		return maxSerialNumKey;
-	}
+    public void setGroupId(Integer groupId) {
+        this.groupId = groupId;
+    }
 
-	public void setMaxSerialNumKey(String maxSerialNumKey) {
-		this.maxSerialNumKey = maxSerialNumKey;
-	}
+    public Integer getOrgId() {
+        return orgId;
+    }
 
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder("CodeCacheDataInfo{");
-		sb.append("hasCache=").append(hasCache);
-		sb.append(", groupId=").append(groupId);
-		sb.append(", orgId=").append(orgId);
-		sb.append(", bizCode='").append(bizCode).append('\'');
-		sb.append(", cacheTemplate='").append(cacheTemplate).append('\'');
-		sb.append(", templateData=").append(templateData);
-		sb.append(", serialNumKey='").append(serialNumKey).append('\'');
-		sb.append(", maxSerialNumKey='").append(maxSerialNumKey).append('\'');
-		sb.append('}');
-		return sb.toString();
-	}
+    public void setOrgId(Integer orgId) {
+        this.orgId = orgId;
+    }
+
+    public String getBizCode() {
+        return bizCode;
+    }
+
+    public void setBizCode(String bizCode) {
+        this.bizCode = bizCode;
+    }
+
+    public void setTemplateData(TemplateCacheData templateData) {
+        this.templateData = templateData;
+    }
+
+    public String getSerialNumKey() {
+        return serialNumKey;
+    }
+
+    public void setSerialNumKey(String serialNumKey) {
+        this.serialNumKey = serialNumKey;
+    }
+
+    public String getMaxSerialNumKey() {
+        return maxSerialNumKey;
+    }
+
+    public void setMaxSerialNumKey(String maxSerialNumKey) {
+        this.maxSerialNumKey = maxSerialNumKey;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("CodeCacheDataInfo{");
+        sb.append("hasCache=").append(hasCache);
+        sb.append(", groupId=").append(groupId);
+        sb.append(", orgId=").append(orgId);
+        sb.append(", bizCode='").append(bizCode).append('\'');
+        sb.append(", cacheTemplate='").append(cacheTemplate).append('\'');
+        sb.append(", templateData=").append(templateData);
+        sb.append(", serialNumKey='").append(serialNumKey).append('\'');
+        sb.append(", maxSerialNumKey='").append(maxSerialNumKey).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

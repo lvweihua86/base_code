@@ -1,6 +1,5 @@
 package com.hivescm.code.cache;
 
-import com.google.gson.Gson;
 import com.hivescm.cache.client.JedisClient;
 import com.hivescm.code.bean.CodeItemBean;
 import com.hivescm.code.bean.CodeRuleBean;
@@ -39,202 +38,167 @@ import java.util.List;
  */
 @Component(value = "templateCache")
 public class TemplateCache {
-	private static final Logger LOGGER = LoggerFactory.getLogger(RedisCodeCache.class);
-	private static final Gson GSON = new Gson();
+    private static final Logger LOGGER = LoggerFactory.getLogger(RedisCodeCache.class);
 
-	@Autowired
-	private CodeRuleMapper codeRuleMapper;
+    @Autowired
+    private CodeRuleMapper codeRuleMapper;
 
-	@Autowired
-	private CodeItemMapper codeItemMapper;
+    @Autowired
+    private CodeItemMapper codeItemMapper;
 
-	@Autowired
-	private RuleItemRelationMapper ruleItemRelationMapper;
+    @Autowired
+    private RuleItemRelationMapper ruleItemRelationMapper;
 
-	@Resource
-	private RedisCodeCache redisCodeCache;
+    @Resource
+    private RedisCodeCache redisCodeCache;
 
-	@Autowired
-	private JedisClient jedisClient;
+    @Autowired
+    private JedisClient jedisClient;
 
-	public CodeCacheDataInfo getCodeInfo(final GenerateCode reqParam) {
-		final CodeCacheDataInfo redisCacheData = getRedisCacheData(reqParam);
-		if (redisCacheData.hasCache()) {
-			return redisCacheData;
-		}
-		return findCodeRuleAndInitCacheData(reqParam);
-	}
+    public CodeCacheDataInfo getCodeInfo(final GenerateCode reqParam) {
+        final CodeCacheDataInfo redisCacheData = getRedisCacheData(reqParam);
+        if (redisCacheData.hasCache()) {
+            return redisCacheData;
+        }
+        return findCodeRuleAndInitCacheData(reqParam);
+    }
 
-	/**
-	 * 获取缓存数据
-	 */
-	private CodeCacheDataInfo getRedisCacheData(final GenerateCode reqParam) {
-		CodeCacheDataInfo cacheBean = new CodeCacheDataInfo();
+    /**
+     * 获取缓存数据
+     */
+    private CodeCacheDataInfo getRedisCacheData(final GenerateCode reqParam) {
+        // 获取 Redis 编码模板缓存
+        final String bizCode = reqParam.getBizCode();
+        final Integer groupId = reqParam.getGroupId();
+        if (groupId != null && Constants.PLATFORM_GROUP_ID == groupId) {
+            // 若集团ID为1，即取平台级的编码编码规则
+            return getPlatFormCache(bizCode);
+        }
 
-		// 获取 Redis 编码模板缓存
-		final String bizCode = reqParam.getBizCode();
-		final Integer groupId = reqParam.getGroupId();
-		if (groupId != null && Constants.PLATFORM_GROUP_ID == groupId) {
-			// 若集团ID为1，即取平台级的编码编码规则
-			return getPlatFormCache(bizCode);
-		}
+        final Integer orgId = reqParam.getOrgId();
+        if (!NumberUtil.nullOrlessThanOrEqualToZero(orgId)) {
+            CacheKey key = CacheKey.getOrgCacheKey(orgId, bizCode);
+            String cacheTemplate = jedisClient.get(key.getTemplateKey());
+            LOGGER.debug("业务单元级缓存的编码规则模板：{}.", cacheTemplate);
+            if (!StringUtils.isEmpty(cacheTemplate)) {
+                return CodeCacheDataInfo.newOrgCache(groupId, orgId, bizCode, cacheTemplate, key.getSerialNumKey(),
+                        key.getMaxSerialNumKey());
+            }
+        }
 
-		final Integer orgId = reqParam.getOrgId();
-		if (!NumberUtil.nullOrlessThanOrEqualToZero(orgId)) {
-			String redisTemplateCacheKey = Constants.BIZ_UNIT_CODE_TEMPLATE_REDIS_PREFIX + orgId + ":" + bizCode;
-			final String cacheTemplate = jedisClient.get(redisTemplateCacheKey);
-			LOGGER.debug("业务单元级缓存的编码规则模板：{}.", cacheTemplate);
-			if (!StringUtils.isEmpty(cacheTemplate)) {
-				cacheBean.setHasCache(true);
-				cacheBean.setCacheTemplate(cacheTemplate);
-				cacheBean.setSerialNumKey(Constants.BIZ_UNIT_CODE_SERIAL_NUM_REDIS_PREFIX + orgId + ":" + bizCode);
-				cacheBean.setMaxSerialNumKey(Constants.BIZ_UNIT_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + orgId + ":" + bizCode);
-				cacheBean.setOrgId(orgId);
-				cacheBean.setGroupId(groupId);
-				cacheBean.setBizCode(bizCode);
-				return cacheBean;
-			}
-		}
+        if (!NumberUtil.nullOrlessThanOrEqualToZero(groupId)) {
+            CacheKey key = CacheKey.getGroupCacheKey(groupId, bizCode);
+            String cacheTemplate = jedisClient.get(key.getTemplateKey());
+            LOGGER.debug("集团级缓存的编码规则模板：{}.", cacheTemplate);
+            if (!StringUtils.isEmpty(cacheTemplate)) {
+                return CodeCacheDataInfo.newGroupCache(groupId, bizCode, cacheTemplate, key.getSerialNumKey(),
+                        key.getMaxSerialNumKey());
+            }
+        }
+        // 均没有获取到模板，去平台级默认的模板
+        return getPlatFormCache(bizCode);
+    }
 
-		if (!NumberUtil.nullOrlessThanOrEqualToZero(groupId)) {
-			String redisTemplateCacheKey = Constants.GROUP_CODE_TEMPLATE_REDIS_PREFIX + groupId + ":" + bizCode;
-			final String cacheTemplate = jedisClient.get(redisTemplateCacheKey);
-			LOGGER.debug("业务单元级缓存的编码规则模板：{}.", cacheTemplate);
-			if (!StringUtils.isEmpty(cacheTemplate)) {
-				cacheBean.setHasCache(true);
-				cacheBean.setCacheTemplate(cacheTemplate);
-				cacheBean.setSerialNumKey(Constants.GROUP_CODE_SERIAL_NUM_REDIS_PREFIX + groupId + ":" + bizCode);
-				cacheBean.setMaxSerialNumKey(Constants.GROUP_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + groupId + ":" + bizCode);
-				cacheBean.setOrgId(0);
-				cacheBean.setGroupId(groupId);
-				cacheBean.setBizCode(bizCode);
-				return cacheBean;
-			}
-		}
-		// 均没有获取到模板，去平台级默认的模板
-		return getPlatFormCache(bizCode);
-	}
+    /**
+     * 获取平台级规则模板缓存
+     *
+     * @param bizCode 业务编码
+     * @return 编码缓存信息
+     */
+    private CodeCacheDataInfo getPlatFormCache(String bizCode) {
+        CacheKey key = CacheKey.getPlatformCacheKey(bizCode);
+        String cacheTemplate = jedisClient.get(key.getTemplateKey());
+        LOGGER.debug("平台级缓存的编码规则模板：{}.", cacheTemplate);
+        if (!StringUtils.isEmpty(cacheTemplate)) {
+            return CodeCacheDataInfo.newPlatformCache(bizCode, cacheTemplate, key.getSerialNumKey(),
+                    key.getMaxSerialNumKey());
+        }
+        return new CodeCacheDataInfo();
+    }
 
-	/**
-	 * 获取平台级规则模板缓存
-	 *
-	 * @param bizCode 业务编码
-	 * @return 编码缓存信息
-	 */
-	private CodeCacheDataInfo getPlatFormCache(String bizCode) {
-		CodeCacheDataInfo cacheBean = new CodeCacheDataInfo();
-		String redisTemplateCacheKey = Constants.PLATFORM_CODE_TEMPLATE_REDIS_PREFIX + bizCode;
-		final String cacheTemplate = jedisClient.get(redisTemplateCacheKey);
-		LOGGER.debug("平台级缓存的编码规则模板：{}.", cacheTemplate);
-		if (!StringUtils.isEmpty(cacheTemplate)) {
-			cacheBean.setHasCache(true);
-			cacheBean.setCacheTemplate(cacheTemplate);
-			cacheBean.setSerialNumKey(Constants.PLATFORM_CODE_SERIAL_NUM_REDIS_PREFIX + bizCode);
-			cacheBean.setMaxSerialNumKey(Constants.PLATFORM_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + bizCode);
-			cacheBean.setOrgId(0);
-			cacheBean.setGroupId(Constants.PLATFORM_GROUP_ID);
-			cacheBean.setBizCode(bizCode);
-		}
-		return cacheBean;
-	}
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
+    public CodeCacheDataInfo findCodeRuleAndInitCacheData(GenerateCode reqParam) {
+        // 获取 Redis 编码模板缓存
+        String bizCode = reqParam.getBizCode();
+        Integer groupId = reqParam.getGroupId();
+        if (Constants.PLATFORM_GROUP_ID == groupId) {// 平台级编码
+            return getPlatFormRule(bizCode);
+        }
 
-	@Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.READ_COMMITTED)
-	public CodeCacheDataInfo findCodeRuleAndInitCacheData(final GenerateCode reqParam) {
-		// 获取 Redis 编码模板缓存
-		final String bizCode = reqParam.getBizCode();
-		final Integer groupId = reqParam.getGroupId();
-		if (Constants.PLATFORM_GROUP_ID == groupId) {// 平台级编码
-			return getPlatFormRule(bizCode);
-		}
+        Integer orgId = reqParam.getOrgId();
+        if (!NumberUtil.nullOrlessThanOrEqualToZero(orgId)) {
+            RuleItemRelationBean ruleItemRelation = ruleItemRelationMapper.queryDefaultBandingRuleLock(groupId, orgId,
+                    bizCode);
+            if (ruleItemRelation != null) {
+                // 再次获取模板，避免并发修改
+                CacheKey key = CacheKey.getOrgCacheKey(orgId, bizCode);
+                String cacheTemplate = jedisClient.get(key.getTemplateKey());
+                if (!StringUtils.isEmpty(cacheTemplate)) { // 再次验证模板是否为空，若非空则表明并发缓存完毕
+                    return CodeCacheDataInfo.newOrgCache(groupId, orgId, bizCode, cacheTemplate, key.getSerialNumKey(),
+                            key.getMaxSerialNumKey());
+                }
 
-		final Integer orgId = reqParam.getOrgId();
-		if (!NumberUtil.nullOrlessThanOrEqualToZero(orgId)) {
-			RuleItemRelationBean ruleItemRelation = ruleItemRelationMapper.queryDefaultBandingRuleLock(groupId, orgId,
-					bizCode);
-			if (ruleItemRelation != null) {
-				// 再次获取模板，避免并发修改
-				String redisTemplateCacheKey = Constants.BIZ_UNIT_CODE_TEMPLATE_REDIS_PREFIX + orgId + ":" + bizCode;
-				final String cacheTemplate = jedisClient.get(redisTemplateCacheKey);
-				if (!StringUtils.isEmpty(cacheTemplate)) { // 再次验证模板是否为空，若非空则表明并发缓存完毕
-					CodeCacheDataInfo codeCacheDataInfo = new CodeCacheDataInfo();
+                // 缓存的步数 增加一次
+                ruleItemRelationMapper.incrCacheStepNum(ruleItemRelation.getId(), 1);
 
-					codeCacheDataInfo.setCacheTemplate(cacheTemplate);
-					String redisSerialNumKey =
-							Constants.BIZ_UNIT_CODE_SERIAL_NUM_REDIS_PREFIX + ruleItemRelation.getOrgId() + ":" + bizCode;
-					String redisMaxSerialNumKey =
-							Constants.BIZ_UNIT_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + ruleItemRelation.getOrgId() + ":" + bizCode;
-					codeCacheDataInfo.setSerialNumKey(redisSerialNumKey);
-					codeCacheDataInfo.setMaxSerialNumKey(redisMaxSerialNumKey);
+                Integer ruleId = ruleItemRelation.getRuleId();
+                CodeRuleBean codeRule = codeRuleMapper.queryRuleByIdLock(ruleId);
+                List<CodeItemBean> codeItems = codeItemMapper.queryItemsByRuleId(codeRule.getId());
+                return redisCodeCache.initCache(codeRule, codeItems, ruleItemRelation, CacheLevelEnum.BIZ_UNIT,
+                        Boolean.FALSE);
+            }
+        }
 
-					return codeCacheDataInfo;
-				}
+        if (!NumberUtil.nullOrlessThanOrEqualToZero(groupId)) {
+            RuleItemRelationBean ruleItemRelation = ruleItemRelationMapper.queryDefaultBandingRuleLock(groupId,
+                    Constants.NO_ORG_ID, bizCode);
+            if (ruleItemRelation != null) {
+                // 再次获取模板，避免并发修改
+                CacheKey key = CacheKey.getGroupCacheKey(groupId, bizCode);
+                String cacheTemplate = jedisClient.get(key.getTemplateKey());
+                if (!StringUtils.isEmpty(cacheTemplate)) {
+                    return CodeCacheDataInfo.newGroupCache(groupId, bizCode, cacheTemplate, key.getSerialNumKey(),
+                            key.getMaxSerialNumKey());
+                }
+                // 缓存的步数 增加一次
+                ruleItemRelationMapper.incrCacheStepNum(ruleItemRelation.getId(), 1);
 
-				// 缓存的步数 增加一次
-				ruleItemRelationMapper.incrCacheStepNum(ruleItemRelation.getId(), 1);
+                CodeRuleBean codeRule = codeRuleMapper.queryDefaultedRuleByBizCodeLock(bizCode, groupId);
+                List<CodeItemBean> codeItems = codeItemMapper.queryItemsByRuleId(codeRule.getId());
+                return redisCodeCache.initCache(codeRule, codeItems, ruleItemRelation, CacheLevelEnum.GROUP,
+                        Boolean.FALSE);
+            }
+        }
 
-				final Integer ruleId = ruleItemRelation.getRuleId();
-				final CodeRuleBean codeRule = codeRuleMapper.queryRuleByIdLock(ruleId);
-				final List<CodeItemBean> codeItems = codeItemMapper.queryItemsByRuleId(codeRule.getId());
-				return redisCodeCache.initCache(codeRule, codeItems, ruleItemRelation, CacheLevelEnum.BIZ_UNIT, Boolean.FALSE);
-			}
-		}
+        return getPlatFormRule(bizCode);
+    }
 
-		if (!NumberUtil.nullOrlessThanOrEqualToZero(groupId)) {
-			RuleItemRelationBean ruleItemRelation = ruleItemRelationMapper.queryDefaultBandingRuleLock(groupId, 0, bizCode);
-			if (ruleItemRelation != null) {
-				// 再次获取模板，避免并发修改
-				String redisTemplateCacheKey = Constants.GROUP_CODE_TEMPLATE_REDIS_PREFIX + groupId + ":" + bizCode;
-				final String cacheTemplate = jedisClient.get(redisTemplateCacheKey);
-				if (!StringUtils.isEmpty(cacheTemplate)) {
-					// 再次验证模板是否为空，若非空则表明并发缓存完毕
-					CodeCacheDataInfo codeCacheDataInfo = new CodeCacheDataInfo();
-					codeCacheDataInfo.setCacheTemplate(cacheTemplate);
-					codeCacheDataInfo.setSerialNumKey(Constants.GROUP_CODE_SERIAL_NUM_REDIS_PREFIX + groupId + ":" + bizCode);
-					codeCacheDataInfo
-							.setMaxSerialNumKey(Constants.GROUP_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + groupId + ":" + bizCode);
-					return codeCacheDataInfo;
-				}
-				// 缓存的步数 增加一次
-				ruleItemRelationMapper.incrCacheStepNum(ruleItemRelation.getId(), 1);
+    /**
+     * 获取平台级规则模板缓存
+     *
+     * @param bizCode 业务编码
+     * @return 编码缓存信息
+     */
+    private CodeCacheDataInfo getPlatFormRule(String bizCode) {
+        RuleItemRelationBean ruleItemRelation = ruleItemRelationMapper.queryDefaultBandingRuleLock(
+                Constants.PLATFORM_GROUP_ID, Constants.NO_ORG_ID, bizCode);
+        if (ruleItemRelation == null) {
+            return new CodeCacheDataInfo();
+        }
 
-				final CodeRuleBean codeRule = codeRuleMapper.queryDefaultedRuleByBizCodeLock(bizCode, groupId);
-				final List<CodeItemBean> codeItems = codeItemMapper.queryItemsByRuleId(codeRule.getId());
-				return redisCodeCache.initCache(codeRule, codeItems, ruleItemRelation, CacheLevelEnum.GROUP, Boolean.FALSE);
-			}
-		}
+        // 获取到锁后，判断缓存是否已经存在，若存在直接返回,避免并发阻塞重复初始化
+        CacheKey key = CacheKey.getPlatformCacheKey(bizCode);
+        String cacheTemplate = jedisClient.get(key.getTemplateKey());
+        if (!StringUtils.isEmpty(cacheTemplate)) {
+            return CodeCacheDataInfo.newPlatformCache(bizCode, cacheTemplate, key.getSerialNumKey(),
+                    key.getMaxSerialNumKey());
+        }
 
-		return getPlatFormRule(bizCode);
-	}
+        // 缓存的步数 增加一次
+        ruleItemRelationMapper.incrCacheStepNum(ruleItemRelation.getId(), 1);
 
-	/**
-	 * 获取平台级规则模板缓存
-	 *
-	 * @param bizCode 业务编码
-	 * @return 编码缓存信息
-	 */
-	private CodeCacheDataInfo getPlatFormRule(String bizCode) {
-		RuleItemRelationBean ruleItemRelation = ruleItemRelationMapper
-				.queryDefaultBandingRuleLock(Constants.PLATFORM_GROUP_ID, 0, bizCode);
-		if (ruleItemRelation == null) {
-			return new CodeCacheDataInfo();
-		}
-
-		// 获取到锁后，判断缓存是否已经存在，若存在直接返回,避免并发阻塞重复初始化
-		String redisTemplateCacheKey = Constants.PLATFORM_CODE_TEMPLATE_REDIS_PREFIX + bizCode;
-		final String cacheTemplate = jedisClient.get(redisTemplateCacheKey);
-		if (!StringUtils.isEmpty(cacheTemplate)) {
-			CodeCacheDataInfo codeCacheDataInfo = new CodeCacheDataInfo();
-			codeCacheDataInfo.setCacheTemplate(cacheTemplate);
-			codeCacheDataInfo.setSerialNumKey(Constants.PLATFORM_CODE_SERIAL_NUM_REDIS_PREFIX + bizCode);
-			codeCacheDataInfo.setMaxSerialNumKey(Constants.PLATFORM_CODE_MAX_SERIAL_NUM_REDIS_PREFIX + bizCode);
-			return codeCacheDataInfo;
-		}
-
-		// 缓存的步数 增加一次
-		ruleItemRelationMapper.incrCacheStepNum(ruleItemRelation.getId(), 1);
-
-		final CodeRuleBean codeRule = codeRuleMapper.queryDefaultedRuleByBizCodeLock(bizCode, Constants.PLATFORM_GROUP_ID);
-		final List<CodeItemBean> codeItems = codeItemMapper.queryItemsByRuleId(codeRule.getId());
-		return redisCodeCache.initCache(codeRule, codeItems, ruleItemRelation, CacheLevelEnum.PLATFORM, Boolean.FALSE);
-	}
+        CodeRuleBean codeRule = codeRuleMapper.queryDefaultedRuleByBizCodeLock(bizCode, Constants.PLATFORM_GROUP_ID);
+        List<CodeItemBean> codeItems = codeItemMapper.queryItemsByRuleId(codeRule.getId());
+        return redisCodeCache.initCache(codeRule, codeItems, ruleItemRelation, CacheLevelEnum.PLATFORM, Boolean.FALSE);
+    }
 }

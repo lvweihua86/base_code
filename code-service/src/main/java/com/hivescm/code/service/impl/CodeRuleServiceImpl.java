@@ -1,6 +1,5 @@
 package com.hivescm.code.service.impl;
 
-import com.hivescm.cache.client.JedisClient;
 import com.hivescm.code.bean.CodeItemBean;
 import com.hivescm.code.bean.CodeRuleBean;
 import com.hivescm.code.bean.CodeRuleInfoBean;
@@ -48,9 +47,6 @@ import java.util.*;
 @Service("codeRuleService")
 public class CodeRuleServiceImpl implements CodeRuleService {
     private static final Logger LOGGER = LoggerFactory.getLogger(CodeRuleServiceImpl.class);
-
-    @Autowired
-    private JedisClient jedisClient;
 
     @Resource
     private CodeService codeService;

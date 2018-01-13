@@ -19,41 +19,46 @@ import java.util.List;
  * @since JDK 1.8
  */
 public class TemplateCacheData {
-	/**
-	 * 编码规则
-	 */
-	private CodeRuleBean codeRule;
+    /**
+     * 编码规则
+     */
+    private CodeRuleBean codeRule;
 
-	/**
-	 * 编码项
-	 */
-	private List<CodeItemBean> codeItems;
+    /**
+     * 编码项
+     */
+    private List<CodeItemBean> codeItems;
 
-	public TemplateCacheData() {
-	}
+    public TemplateCacheData() {
+    }
 
-	public CodeRuleBean getCodeRule() {
-		return codeRule;
-	}
+    public TemplateCacheData(CodeRuleBean codeRule, List<CodeItemBean> codeItems) {
+        this.codeRule = codeRule;
+        this.codeItems = codeItems;
+    }
 
-	public void setCodeRule(CodeRuleBean codeRule) {
-		this.codeRule = codeRule;
-	}
+    public CodeRuleBean getCodeRule() {
+        return codeRule;
+    }
 
-	public List<CodeItemBean> getCodeItems() {
-		return codeItems;
-	}
+    public void setCodeRule(CodeRuleBean codeRule) {
+        this.codeRule = codeRule;
+    }
 
-	public void setCodeItems(List<CodeItemBean> codeItems) {
-		this.codeItems = codeItems;
-	}
+    public List<CodeItemBean> getCodeItems() {
+        return codeItems;
+    }
 
-	@Override
-	public String toString() {
-		final StringBuilder sb = new StringBuilder("TemplateCacheData{");
-		sb.append("codeRule=").append(codeRule);
-		sb.append(", codeItems=").append(codeItems);
-		sb.append('}');
-		return sb.toString();
-	}
+    public void setCodeItems(List<CodeItemBean> codeItems) {
+        this.codeItems = codeItems;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("TemplateCacheData{");
+        sb.append("codeRule=").append(codeRule);
+        sb.append(", codeItems=").append(codeItems);
+        sb.append('}');
+        return sb.toString();
+    }
 }
