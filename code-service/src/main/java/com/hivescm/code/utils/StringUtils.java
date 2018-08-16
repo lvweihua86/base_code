@@ -58,7 +58,7 @@ public class StringUtils {
 		case LEFT:
 			String tempLeftStr = str;
 			for (int i = 0; i < expectLength - strLength; i++) {
-				tempLeftStr = "0" + tempLeftStr;
+				tempLeftStr = "A" + tempLeftStr;
 			}
 			return tempLeftStr;
 		default:

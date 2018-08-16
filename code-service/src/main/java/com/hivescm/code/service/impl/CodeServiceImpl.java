@@ -208,9 +208,10 @@ public class CodeServiceImpl implements CodeService {
 		final Long serialNum = jedisClient.incrOneByKey(cacheData.getSerialNumKey());
 		final String newSerialNum = StringUtils
 				.coverLength(codeItem.getItemLength(), CutWayEnum.CUT_LEFT, serialNum + "", "0", CoverWayEnum.LEFT);
-
-		final long cacheMaxSerialNum = Long.valueOf(jedisClient.get(cacheData.getMaxSerialNumKey()));
-		final long cacheSerialNum = Long.valueOf(jedisClient.get(cacheData.getSerialNumKey()));
+		String maxSerialNum = jedisClient.get(cacheData.getMaxSerialNumKey());
+		final long cacheMaxSerialNum = null == maxSerialNum ? 0l : Long.valueOf(maxSerialNum);
+		String cacheSerial = jedisClient.get(cacheData.getSerialNumKey());
+		final long cacheSerialNum = null == cacheSerial ? 0l : Long.valueOf(cacheSerial);
 		// 启动任务处理Mysql 缓存的流水号
 		if (SerialNumIncrTask.reachThresholdValue(cacheMaxSerialNum, cacheSerialNum)) {
 			new SerialNumIncrTask(cacheData, jedisClient, ruleItemRelationMapper).execute();
