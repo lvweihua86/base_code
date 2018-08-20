@@ -71,6 +71,14 @@
 										   modulate="true" />
 			</Policies>
 		</RollingFile>
+
+		<RollingFile name="redisKeyLog" fileName="${base.dir}/redisKeyLog.log"
+					 filePattern="${base.dir}/redisKeyLog_bk.log">
+			<Policies>
+				<SizeBasedTriggeringPolicy size="1024 MB" />
+			</Policies>
+			<DefaultRolloverStrategy max="20"/>
+		</RollingFile>
 	</Appenders>
 	<Loggers>
 		<!-- default log -->
@@ -103,6 +111,11 @@
 		<Logger name="com.hivescm.common.log.FeignLogger" level="INFO"
 				additivity="true">
 			<AppenderRef ref="rpcAppender" />
+		</Logger>
+
+		<Logger name="redisKeyLog" level="INFO"
+				additivity="false">
+			<AppenderRef ref="redisKeyLog" />
 		</Logger>
 	</Loggers>
 </Configuration>

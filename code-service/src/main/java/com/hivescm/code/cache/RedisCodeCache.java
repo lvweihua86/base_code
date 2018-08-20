@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.hivescm.cache.client.JedisClient;
 import com.hivescm.code.bean.CodeItemBean;
 import com.hivescm.code.bean.CodeRuleBean;
+import com.hivescm.code.bean.RedisKeyBean;
 import com.hivescm.code.bean.RuleItemRelationBean;
 import com.hivescm.code.common.Constants;
 import com.hivescm.code.enums.BooleanEnum;
@@ -218,5 +219,20 @@ public class RedisCodeCache {
         long cacheSerialNum = firstTime ? 0 : relation.nextCacheSerialNum();
         long cacheMaxSerialNum = firstTime ? relation.currentMaxSerialNum() : relation.nextMaxSerialNum();
         return new String[]{String.valueOf(cacheSerialNum), String.valueOf(cacheMaxSerialNum)};
+    }
+
+    public void updateRedisKeys(List<RedisKeyBean> redisKeyBeanList) {
+        if (redisKeyBeanList == null) {
+            throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "redisKeyBeanList参数为空");
+        }
+        redisKeyBeanList.forEach(redisKeyBean -> {
+            CacheKey key = null;
+            if (Constants.PLATFORM_GROUP_ID == redisKeyBean.getGroupId()) {
+                key = CacheKey.getPlatformCacheKey(redisKeyBean.getBizCode());
+            } else {
+                key = CacheKey.getGroupCacheKey(redisKeyBean.getGroupId().intValue(), redisKeyBean.getBizCode());
+            }
+            jedisClient.set(key.getSerialNumKey(), redisKeyBean.getValue().toString());
+        });
     }
 }
