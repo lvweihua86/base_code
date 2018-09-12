@@ -36,9 +36,6 @@ public enum SerialTypeEnum {
 	}
 
 	public static final SerialTypeEnum getItemTypeEnum(Integer type) {
-		if (NumberUtil.nullOrlessThanOrEqualToZero(type)) {
-			throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "编码段类型不存在");
-		}
 		for (SerialTypeEnum itemTypeEnum : SerialTypeEnum.values()) {
 			if (itemTypeEnum.getType() == type) {
 				return itemTypeEnum;
