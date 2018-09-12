@@ -1,8 +1,6 @@
 package com.hivescm.code.controller.doc;
 
 import com.hivescm.code.bean.RedisKeyBean;
-import com.hivescm.code.dto.CodeResult;
-import com.hivescm.code.dto.GenerateCode;
 import com.hivescm.common.domain.DataResult;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
