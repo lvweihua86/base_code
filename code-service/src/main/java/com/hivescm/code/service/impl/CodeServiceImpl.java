@@ -243,13 +243,13 @@ public class CodeServiceImpl implements CodeService {
                 serialNum = jedisClient.incrOneByKey(serialNumKey);
                 break;
             case DAY_SERIAL:
-                serialNum = jedisClient.incrOneByKey(serialNumKey + ":" + today) - 1;
+                serialNum = jedisClient.incrOneByKey(serialNumKey + ":" + today);
                 break;
             case MONTH_SERIAL:
-                serialNum = jedisClient.incrOneByKey(serialNumKey + ":" + today.substring(0,6)) - 1;
+                serialNum = jedisClient.incrOneByKey(serialNumKey + ":" + today.substring(0, 6));
                 break;
             case YEAR_SERIAL:
-                serialNum = jedisClient.incrOneByKey(serialNumKey + ":" + today.substring(0,4)) - 1;
+                serialNum = jedisClient.incrOneByKey(serialNumKey + ":" + today.substring(0, 4));
                 break;
             case STRING_SERIAL:
                 serialNum = jedisClient.incrOneByKey(serialNumKey);
