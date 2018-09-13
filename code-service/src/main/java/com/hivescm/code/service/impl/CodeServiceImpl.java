@@ -236,6 +236,7 @@ public class CodeServiceImpl implements CodeService {
      */
     public Long serialTypeKey(Integer serialType, String serialNumKey) {
         Long serialNum;
+        int seconds;
         String today = new SimpleDateFormat("yyyyMMdd").format(System.currentTimeMillis());
         final SerialTypeEnum serialTypeEnum = SerialTypeEnum.getItemTypeEnum(serialType);
         switch (serialTypeEnum) {
@@ -243,13 +244,19 @@ public class CodeServiceImpl implements CodeService {
                 serialNum = jedisClient.incrOneByKey(serialNumKey);
                 break;
             case DAY_SERIAL:
-                serialNum = jedisClient.incrOneByKey(serialNumKey + ":" + today);
+                seconds = 31 * 24 * 60 * 60;//缓存31天,不用的前提下多保存30天
+                String daySerialNumKey = serialNumKey + ":" + today;
+                serialNum = jedisClient.incrOneByKey(daySerialNumKey, seconds);
                 break;
             case MONTH_SERIAL:
-                serialNum = jedisClient.incrOneByKey(serialNumKey + ":" + today.substring(0, 6));
+                seconds = 60 * 24 * 60 * 60;//缓存60天，不用的前提下多保存30天
+                String monthSerialNumKey = serialNumKey + ":" + serialNumKey + ":" + today.substring(0, 6);
+                serialNum = jedisClient.incrOneByKey(monthSerialNumKey,seconds);
                 break;
             case YEAR_SERIAL:
-                serialNum = jedisClient.incrOneByKey(serialNumKey + ":" + today.substring(0, 4));
+                seconds = 395 * 24 * 60 * 60;//缓存395天，不用的前提下多保存30天
+                String yearSerialNumKey = serialNumKey + ":" + serialNumKey + ":" + today.substring(0, 4);
+                serialNum = jedisClient.incrOneByKey(yearSerialNumKey,seconds);
                 break;
             case STRING_SERIAL:
                 serialNum = jedisClient.incrOneByKey(serialNumKey);
