@@ -36,7 +36,7 @@ public class CodeItemDto implements Serializable {
 	 */
 	private Integer serial = 0;
 	/**
-	 * 流水类型（不填）
+	 * 流水类型（默认不流水）
 	 * 0:不流水;
 	 * 1:按日流水;
 	 * 2:按月流水;

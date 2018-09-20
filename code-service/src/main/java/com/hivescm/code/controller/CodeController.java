@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
  * <b>Description:</b><br>
  * 编码控制器 <br><br>
  * <p>
- * <b>Note</b><br>
+ * <b>Note</b><br><br>
  * <b>ProjectName:</b> base-code
  * <br><b>PackageName:</b> com.hivescm.code.bean
  * <br><b>Date:</b> 2017/10/19 17:17

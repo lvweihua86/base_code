@@ -13,6 +13,7 @@ import com.hivescm.code.dto.GenerateCode;
 import com.hivescm.code.enums.CoverWayEnum;
 import com.hivescm.code.enums.CutWayEnum;
 import com.hivescm.code.enums.ItemTypeEnum;
+import com.hivescm.code.enums.SerialTypeEnum;
 import com.hivescm.code.exception.CodeErrorCode;
 import com.hivescm.code.exception.CodeException;
 import com.hivescm.code.mapper.CodeItemMapper;
@@ -206,8 +207,9 @@ public class CodeServiceImpl implements CodeService {
     private void serialItem(StringBuilder codeBuilder, CodeItemBean codeItem, final GenerateCode reqParam,
                             final CodeRuleBean codeRule, final CodeCacheDataInfo cacheData) {
 
-        final Long serialNum = jedisClient.incrOneByKey(cacheData.getSerialNumKey());
-        RedisKey.info("(" + cacheData.getSerialNumKey() +":"+serialNum + ")");
+        Long serialNum = serialTypeKey(codeItem.getSerialType(), cacheData.getSerialNumKey());
+
+        RedisKey.info("(" + cacheData.getSerialNumKey() + ":" + serialNum + ")");
         String newSerialNum = Long.toString(serialNum);
         if (Long.toString(serialNum).length() < codeItem.getItemLength()) {
             newSerialNum = StringUtils.coverLength(codeItem.getItemLength(), CutWayEnum.CUT_LEFT, serialNum + "", "0", CoverWayEnum.LEFT);
@@ -222,6 +224,47 @@ public class CodeServiceImpl implements CodeService {
         }
 
         codeBuilder.append(newSerialNum);
+    }
+
+    /**
+     * 流水依据
+     * 0:不流水;
+     * 1:按日流水;
+     * 2:按月流水;
+     * 3:按年流水;
+     * 4:按字符串流水;
+     */
+    public Long serialTypeKey(Integer serialType, String serialNumKey) {
+        Long serialNum;
+        int seconds;
+        String today = new SimpleDateFormat("yyyyMMdd").format(System.currentTimeMillis());
+        final SerialTypeEnum serialTypeEnum = SerialTypeEnum.getItemTypeEnum(serialType);
+        switch (serialTypeEnum) {
+            case NOT_SERIAL:
+                serialNum = jedisClient.incrOneByKey(serialNumKey);
+                break;
+            case DAY_SERIAL:
+                seconds = 31 * 24 * 60 * 60;//缓存31天,不用的前提下多保存30天
+                String daySerialNumKey = serialNumKey + ":" + today;
+                serialNum = jedisClient.incrOneByKey(daySerialNumKey, seconds);
+                break;
+            case MONTH_SERIAL:
+                seconds = 60 * 24 * 60 * 60;//缓存60天，不用的前提下多保存30天
+                String monthSerialNumKey = serialNumKey + ":" + serialNumKey + ":" + today.substring(0, 6);
+                serialNum = jedisClient.incrOneByKey(monthSerialNumKey,seconds);
+                break;
+            case YEAR_SERIAL:
+                seconds = 395 * 24 * 60 * 60;//缓存395天，不用的前提下多保存30天
+                String yearSerialNumKey = serialNumKey + ":" + serialNumKey + ":" + today.substring(0, 4);
+                serialNum = jedisClient.incrOneByKey(yearSerialNumKey,seconds);
+                break;
+            case STRING_SERIAL:
+                serialNum = jedisClient.incrOneByKey(serialNumKey);
+                break;
+            default:
+                throw new CodeException(CodeErrorCode.REQ_PARAM_ERROR_CODE, "不支持的流水类型");
+        }
+        return serialNum;
     }
 }
 
