@@ -311,7 +311,7 @@ public class CodeRuleServiceImpl implements CodeRuleService {
                     codeItemBean.setSerial(0);
                     break;
                 case SERIAL:
-                    codeItemBean.setSerialType(0);
+                    codeItemBean.setSerialType(codeItemDto.getSerialType());
                     break;
             }
             codeItemsTree.add(codeItemBean);
